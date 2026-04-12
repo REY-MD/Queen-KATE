@@ -53,7 +53,7 @@ zokou({
         externalAdReply: {
           title: "BOT SYSTEM DETAILS",
           body: "Click to visit Developer's GitHub",
-          thumbnailUrl: "https://files.catbox.moe/sez5vx.jpg",
+          thumbnailUrl: "https://o.uguu.se/alLgUEwf.jpg",
           sourceUrl: "",
           mediaType: 1,
           renderLargerThumbnail: true
