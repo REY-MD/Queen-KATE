@@ -29,9 +29,9 @@ async (dest, zk, commandeOptions) => {
 
     // 4. Random selection from 3 Images
     const myPictures = [
-        "https://files.catbox.moe/qf6u89.jpg",
-        "https://files.catbox.moe/qf6u89.jpg",
-        "https://files.catbox.moe/qf6u89.jpg"
+        "https://ibb.co/cXZwLF3f",
+        "https://ibb.co/cXZwLF3f",
+        "https://ibb.co/cXZwLF3f"
     ];
     const randomPic = myPictures[Math.floor(Math.random() * myPictures.length)];
 
