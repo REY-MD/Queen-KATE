@@ -13,13 +13,13 @@ zokou({
     
     // Media Links
     const imageUrl1 = "https://files.catbox.moe/sez5vx.jpg"; 
-    const imageUrl2 = "https://files.catbox.moe/sez5vx.jpg"; 
+    const imageUrl2 = ""; 
 
     try {
-        const testMsg = `*𝐙𝐄𝐙𝐄-𝐓𝐄𝐂𝐇 𝚂𝚈𝚂𝚃𝙴𝙼 𝙲𝙷𝙴𝙲𝙺* ⚡\n\n` +
+        const testMsg = `*QUEE-KATE AI IS RUNNING* ⚡\n\n` +
             `*Status:* 𝙾𝙽𝙻𝙸𝙽𝙴\n` +
-            `*Engine:* Timnasa 𝚅2\n` +
-            `*Owner:* 𝚃𝙸𝙼𝙽𝙰𝚂𝙰 𝚃𝙼𝙳\n` +
+            `*Engine:* 𝐙𝐄𝐙𝐄-𝐌𝐃\n` +
+            `*Owner:* 𝐙𝐄𝐙𝐄-𝐓𝐄𝐂𝐇\n` +
             `*Timestamp:* ${new Date().toLocaleString()}\n\n` +
             `_System is running smoothly with media support._`;
 
