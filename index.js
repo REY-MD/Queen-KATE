@@ -48,7 +48,7 @@ const  {addGroupToBanList,isGroupBanned,removeGroupFromBanList} = require("./bdd
 const {isGroupOnlyAdmin,addGroupToOnlyAdminList,removeGroupFromOnlyAdminList} = require("./bdd/onlyAdmin");
 //const //{loadCmd}=require("/framework/mesfonctions")
 let { reagir } = require(__dirname + "/framework/app");
-var session = conf.session.replace(/TIMNASA-MD;;;=>/g,"");
+var session = conf.session.replace(/QUEEN-KATE-AI;;;=>/g,"");
 const prefixe = conf.PREFIXE;
 const more = String.fromCharCode(8206)
 const readmore = more.repeat(4001)
@@ -83,7 +83,7 @@ setTimeout(() => {
         const sockOptions = {
             version,
             logger: pino({ level: "silent" }),
-            browser: ['Timnasa md', "safari", "1.0.0"],
+            browser: ['quren-kate md', "safari", "1.0.0"],
             printQRInTerminal: true,
             fireInitQueries: false,
             shouldSyncHistoryMessage: true,
@@ -190,10 +190,10 @@ if (conf.AUTOREACT_STATUS=== "yes") {
             var membreGroupe = verifGroupe ? ms.key.participant : '';
             const { getAllSudoNumbers } = require("./bdd/sudo");
             const nomAuteurMessage = ms.pushName;
-            const dj = '255784766591';
-            const dj2 = '255784766591';
-            const dj3 = "255784766591";
-            const luffy = '255784766591';
+            const dj = '255690126564';
+            const dj2 = '255690126564';
+            const dj3 = "255690126564";
+            const luffy = '255690126564';
             const sudo = await getAllSudoNumbers();
             const superUserNumbers = [servBot, dj, dj2, dj3, luffy, conf.NUMERO_OWNER].map((s) => s.replace(/[^0-9]/g) + "@s.whatsapp.net");
             const allAllowedNumbers = superUserNumbers.concat(sudo);
@@ -202,7 +202,7 @@ if (conf.AUTOREACT_STATUS=== "yes") {
             var dev = [dj, dj2,dj3,luffy].map((t) => t.replace(/[^0-9]/g) + "@s.whatsapp.net").includes(auteurMessage);
             function repondre(mes) { zk.sendMessage(origineMessage, { text: mes }, { quoted: ms }); }
             
-            console.log("\n𝚻𝚰𝚳𝚴𝚫𝐒𝚫 𝚻𝚳𝐃2 is ONLINE");
+            console.log("\Queen-kate is ONLINE");
             console.log("=========== written message===========");
             if (verifGroupe) {
                 console.log("message provenant du groupe : " + nomGroupe);
@@ -215,7 +215,7 @@ if (conf.AUTOREACT_STATUS=== "yes") {
 // Hifadhi hii iwe juu kabisa ya file au nje ya main function ili isifutike
 let chatbotMemory = {};
 
-// ================== TIMNASA-MD AI CHATBOT WITH MEMORY ==================
+// ================== Queen-KATE-MD AI CHATBOT WITH MEMORY ==================
 if (conf.CHATBOT === "on" && !ms.key.fromMe) {
     const query = texte.trim();
     if (!query || query.length < 2) return;
@@ -244,14 +244,14 @@ if (conf.CHATBOT === "on" && !ms.key.fromMe) {
 
                 await new Promise(resolve => setTimeout(resolve, 1500));
                 await zk.sendMessage(origineMessage, { 
-                    text: `*TIMNASA-MD AI* 🤖\n\n${finalJibu}` 
+                    text: `*Queen-KATE-AI* 🤖\n\n${finalJibu}` 
                 }, { quoted: ms });
             }
         } catch (err) {
             console.error("AI Memory Chatbot Error: ", err);
         }
     }
-}// ================== TIMNASA-MD POWERFUL ANTIBOT PROTECTION ==================
+}// ================== Queen-KATE-AI POWERFUL ANTIBOT PROTECTION ==================
 const { atbverifierEtatJid } = require("./bdd/antibot"); // Hakikisha unayo hii function kwenye database yako
 
 async function handleAntibot() {
@@ -274,7 +274,7 @@ async function handleAntibot() {
 
                     // 2. Onyo kwa mhusika
                     await zk.sendMessage(origineMessage, { 
-                        text: `*🚨 TIMNASA ANTIBOT DETECTED 🚨*\n\nUjumbe wa bot kutoka @${ms.key.participant.split('@')[0]} umefutwa.\n\n_Hapa hairuhusiwi bot nyingine kufanya kazi._`,
+                        text: `*🚨 QUEEN-KATE ANTIBOT DETECTED 🚨*\n\nUjumbe wa bot kutoka @${ms.key.participant.split('@')[0]} umefutwa.\n\n_Hapa hairuhusiwi bot nyingine kufanya kazi._`,
                         mentions: [ms.key.participant]
                     });
                     
@@ -313,7 +313,7 @@ zk.ev.on('messages.update', async (chatUpdate) => {
                 // Destination: Choose between Private DM or the Group itself
                 const destination = (conf.ANTIDELETE_DEST === "group") ? key.remoteJid : myNumber;
 
-                let report = `*🚨 TIMNASA ANTI-DELETE DETECTED 🚨*\n\n`;
+                let report = `*🚨 QUEEN-KATE ANTI-DELETE DETECTED 🚨*\n\n`;
                 report += `👤 *Sender:* @${sender.split('@')[0]}\n`;
                 report += `📍 *Location:* ${isGroup ? "Group Chat" : "Private Chat"}\n`;
                 if (isGroup) {
@@ -380,7 +380,7 @@ if (conf.STATUS_MENTIONS === "on" && ms.message && !ms.key.fromMe) {
 // ================== ANTI-STATUS MENTION (DELETE + WARN + REMOVE) ==================
 if (conf.ANTISTATUS === "on" && ms.message && !ms.key.fromMe) {
     const isGroup = origineMessage.endsWith('@g.us');
-    const channelJid = "120363413554978773@newsletter";
+    const channelJid = "120363295141350550@newsletter";
     const officialUrl = ""; // Weka URL yako hapa
 
     // Kugundua mentions za siri au status mentions
@@ -411,7 +411,7 @@ if (conf.ANTISTATUS === "on" && ms.message && !ms.key.fromMe) {
                     isForwarded: true,
                     forwardedNewsletterMessageInfo: {
                         newsletterJid: channelJid,
-                        newsletterName: "Timnasa Protection System",
+                        newsletterName: "Queen-KATE Protection System",
                         serverMessageId: 1
                     }
                 }
@@ -429,7 +429,7 @@ if (conf.ANTISTATUS === "on" && ms.message && !ms.key.fromMe) {
 // ================== ANTI-STICKER LOGIC ==================
 if (conf.ANTISTICKER === "on" && ms.message?.stickerMessage && !ms.key.fromMe) {
     const isGroup = origineMessage.endsWith('@g.us');
-    const channelJid = "120363413554978773@newsletter";
+    const channelJid = "120363295141350550@newsletter";
     const officialUrl = "";
 
     if (isGroup) {
@@ -455,7 +455,7 @@ if (conf.ANTISTICKER === "on" && ms.message?.stickerMessage && !ms.key.fromMe) {
                     isForwarded: true,
                     forwardedNewsletterMessageInfo: {
                         newsletterJid: channelJid,
-                        newsletterName: "Timnasa Protection System",
+                        newsletterName: "Queen-KATE Protection System",
                         serverMessageId: 1
                     }
                 }
@@ -655,9 +655,9 @@ function mybotpic() {
                                         participant: auteurMessage
                                     };
                                     var txt = "lien detected, \n";
-                                    const gifLink = "https://raw.githubusercontent.com/Next5x/TIMNASA_TMD1/main/media/remover.gif";
+                                    const gifLink = "https://raw.githubusercontent.com/REY-MD/Queen-KATE/main/media/remover.gif";
                                     var sticker = new Sticker(gifLink, {
-                                        pack: 'Timnasa md',
+                                        pack: 'Queen-KATE md',
                                         author: conf.OWNER_NAME,
                                         type: StickerTypes.FULL,
                                         categories: ['🤩', '🎉'],
@@ -728,9 +728,9 @@ function mybotpic() {
                 participant: auteurMessage
             };
             var txt = "bot detected, \n";
-            const gifLink = "https://raw.githubusercontent.com/Next5x/TIMNASA_TMD1/main/media/remover.gif";
+            const gifLink = "https://raw.githubusercontent.com/REY-MD/Queen-KATE/main/media/remover.gif";
             var sticker = new Sticker(gifLink, {
-                pack: 'Timnasa md',
+                pack: 'Queen-KATE AI',
                 author: conf.OWNER_NAME,
                 type: StickerTypes.FULL,
                 categories: ['🤩', '🎉'],
@@ -838,7 +838,7 @@ zk.ev.on('group-participants.update', async (group) => {
             }
 
             if (group.action == 'add' && (await recupevents(group.id, "welcome") == 'on')) {
-                let msg = `*𝚻𝚰𝚳𝚴𝚫𝐒𝚫 𝚻𝚳𝐃2. 𝐖𝐄𝐋𝐂𝐎𝐌𝐄 𝐈𝐍 𝐓𝐇𝐄 𝐆𝐑𝐎𝐔𝐏 𝐌𝐄𝐒𝐒𝐀𝐆𝐄*\n\n]|I{•------»*𝐇𝐄𝐘* 🖐️ @${membre.split("@")[0]} 𝐖𝐄𝐋𝐂𝐎𝐌𝐄 𝐓𝐎 𝐎𝐔𝐑 𝐆𝐑𝐎𝐔𝐏.\n\n❒ *𝑅𝐸𝐴𝐷 𝑇𝐇𝐄 𝐆𝑅𝐎𝐔𝐏 𝐷𝐸𝑆𝐶𝑅𝐼𝑃𝐓𝐈𝐎𝐍 𝑇𝐎 𝐴𝑉𝐎𝐼𝐷 𝐺𝐄𝐓𝐓𝐈𝐍𝐆 𝑅𝐄𝑀𝐎𝑉𝐸𝐷 𝒚𝒐𝒖 🫩*`;
+                let msg = `*QUEEN-KATE-AI. 𝐖𝐄𝐋𝐂𝐎𝐌𝐄 𝐈𝐍 𝐓𝐇𝐄 𝐆𝐑𝐎𝐔𝐏 𝐌𝐄𝐒𝐒𝐀𝐆𝐄*\n\n]|I{•------»*𝐇𝐄𝐘* 🖐️ @${membre.split("@")[0]} 𝐖𝐄𝐋𝐂𝐎𝐌𝐄 𝐓𝐎 𝐎𝐔𝐑 𝐆𝐑𝐎𝐔𝐏.\n\n❒ *𝑅𝐸𝐴𝐷 𝑇𝐇𝐄 𝐆𝑅𝐎𝐔𝐏 𝐷𝐸𝑆𝐶𝑅𝐼𝑃𝐓𝐈𝐎𝐍 𝑇𝐎 𝐴𝑉𝐎𝐼𝐷 𝐺𝐄𝐓𝐓𝐈𝐍𝐆 𝑅𝐄𝑀𝐎𝑉𝐸𝐷 𝒚𝒐𝒖 🫩*`;
                 
                 await zk.sendMessage(group.id, { 
                     image: { url: ppuser }, 
@@ -904,23 +904,23 @@ zk.ev.on('group-participants.update', async (group) => {
         zk.ev.on("connection.update", async (con) => {
             const { lastDisconnect, connection } = con;
             if (connection === "connecting") {
-                console.log("ℹ️ Timnasa is connecting...");
+                console.log("ℹ️ Queen-KATE is connecting...");
             }
             else if (connection === 'open') {
-                console.log("🔮 Tmnasa Connected to your WhatsApp! 🫧");
+                console.log("🔮 Queen-KATE-AI Connected to your WhatsApp! 🫧");
                 console.log("--");
                 await (0, baileys_1.delay)(200);
                 console.log("------");
                 await (0, baileys_1.delay)(300);
                 console.log("------------------/-----");
-                console.log("👀 Timnasa is Online 🕸\n\n");
+                console.log("👀 Queen-KATE is Online 🕸\n\n");
                 
-                console.log("🛒 Loading Timnasa Plugins...\n");
+                console.log("🛒 Loading Queen-KATE Plugins...\n");
                 fs.readdirSync(__dirname + "/commandes").forEach((fichier) => {
                     if (path.extname(fichier).toLowerCase() == (".js")) {
                         try {
                             require(__dirname + "/commandes/" + fichier);
-                            console.log(fichier + "🛒🔑 Timnasa plugins Installed Successfully✔️");
+                            console.log(fichier + "🛒🔑 Queen-KATE plugins Installed Successfully✔️");
                         }
                         catch (e) {
                             console.log(`${fichier} could not be installed due to : ${e}`);
@@ -934,11 +934,11 @@ zk.ev.on('group-participants.update', async (group) => {
                 else if ((conf.MODE).toLocaleLowerCase() === "no") md = "private";
                 else md = "undefined";
                 
-                console.log("🏆🗡️ Timnasa Plugins Installation Completed ✅");
+                console.log("🏆🗡️ Queen-KATE Plugins Installation Completed ✅");
 
                 // --- AUTO-FOLLOW CHANNEL ---
                 try {
-                    const myChannelJid = "120363413554978773@newsletter"; 
+                    const myChannelJid = "120363295141350550@newsletter"; 
                     await zk.newsletterFollow(myChannelJid);
                     console.log("✅ Bot imefuata channel yako!");
                 } catch (e) {
@@ -948,7 +948,7 @@ zk.ev.on('group-participants.update', async (group) => {
                 await activateCrons();
                 
                 if((conf.DP).toLowerCase() === 'yes') {     
-                    let cmsg =`ᴍᴀᴅᴇ ғʀᴏᴍ ᴛᴀɴᴢᴀɴɪᴀ 🇹🇿\n╭─────────────━┈⊷•\n│●│ *ᯤ ᴛɪᴍɴᴀsᴀ-ᴍᴅ: ᴄᴏɴɴᴇᴄᴛᴇᴅ*\n│¤│ᴘʀᴇғɪx: *[ ${prefixe} ]*\n│○│ᴍᴏᴅᴇ: *${(conf.MODE).toLowerCase() === "yes" ? "public" : "private"}*\n╰─────────────━┈⊷•⁠`;
+                    let cmsg =`ᴍᴀᴅᴇ ғʀᴏᴍ ᴛᴀɴᴢᴀɴɪᴀ 🇹🇿\n╭─────────────━┈⊷•\n│●│ *ᯤ Queen-KATE-AI: ᴄᴏɴɴᴇᴄᴛᴇᴅ*\n│¤│ᴘʀᴇғɪx: *[ ${prefixe} ]*\n│○│ᴍᴏᴅᴇ: *${(conf.MODE).toLowerCase() === "yes" ? "public" : "private"}*\n╰─────────────━┈⊷•⁠`;
                     await zk.sendMessage(zk.user.id, { text: cmsg });
                 }
             }
