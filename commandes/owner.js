@@ -128,13 +128,13 @@ zokou({ nomCom: "support", categorie: "General", reaction: "🔗" }, async (dest
 https://whatsapp.com/channel/0029VaeRrcnADTOKzivM0S1r
 
 *👥 𝐒𝐮𝐩𝐩𝐨𝐫𝐭 𝐆𝐫𝐨𝐮𝐩:*
-https://chat.whatsapp.com/
+https://chat.whatsapp.com/DI9XJA1ksli3Zsq0kz0w88?mode=gi_t
 
 *🎥 𝐘𝐨𝐮𝐓𝐮𝐛𝐞:*
 https://www.youtube.com/@Humphrey47Mbise
 
 *🔥 Tick-tock:*
-https://vm.tiktok.com/ZMS2H8vPx/
+https://vm.tiktok.com/humphreymbise47
 
 *💌 Instagram:*
 https://www.instagram.com/humphreymbise255?igsh=MzNlNGNkZWQ4Mg==
