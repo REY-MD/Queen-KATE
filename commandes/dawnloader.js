@@ -401,7 +401,7 @@ zokou({
 
     let response =
       await tryApi(`https://apis.davidcyriltech.my.id/download/ytmp3?url=${encodeURIComponent(videoUrl)}&apikey=gifted-md`)
-      || await tryApi(`https://www.dark-yasiya-api.site/download/ytmp3?url=${encodeURIComponent(videoUrl)}`)
+      || await tryApi(`https://jerrycoder.oggyapi.workers.dev/spotify?search=${encodeURIComponent(videoUrl)}`)
       || await tryApi(`https://api.dreaded.site/api/ytdl/video?query=${encodeURIComponent(videoUrl)}`);
 
     if (!response.success) return repondre("All sources failed. Try again later.");
