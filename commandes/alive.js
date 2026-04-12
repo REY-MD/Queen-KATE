@@ -43,11 +43,11 @@ The bot is active and responding!
 
 ━━━━━━━━━━━━━━━━━━━━━
 🚀 *SPEED:* ${latency} ms
-🌟 *OWNER:* ${s.OWNER_NAME || "Queen-KATE"}
+🌟 *OWNER:* ${s.OWNER_NAME || "𝐙𝐄𝐙𝐄-𝐓𝐄𝐂𝐇"}
 🕒 *TIME:* ${currentTime} EAT
 ⌛ *UPTIME:* ${hours}h ${minutes}m ${seconds}s
 🖥️ *PLATFORM:* ${os.platform()}
-🛰️ *RAM:* ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB
+🛰️ *RAM:* ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} GB
 ━━━━━━━━━━━━━━━━━━━━━
 
 _Type .menu to view all commands_`;
