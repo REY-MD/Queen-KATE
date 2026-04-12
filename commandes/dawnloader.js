@@ -50,15 +50,15 @@ zokou({
   try {
     const apiKey = conf.OMDB_KEY || "38f19ae1";
     const searchRes = await axios.get(`http://www.omdbapi.com/?s=${encodeURIComponent(query)}&apikey=${apiKey}`);
-    
-    if (searchRes.data.Response === "False") 
+
+    if (searchRes.data.Response === "False")
       return repondre(`❌ Movie haikupatikana: ${searchRes.data.Error}`);
 
     const movieID = searchRes.data.Search[0].imdbID;
     const detailsRes = await axios.get(`http://www.omdbapi.com/?i=${movieID}&apikey=${apiKey}`);
     const movie = detailsRes.data;
 
-    if (movie.Response === "False") 
+    if (movie.Response === "False")
       return repondre(`❌ Error: ${movie.Error}`);
 
     const caption = `🎬 *${movie.Title}* (${movie.Year})
@@ -111,7 +111,7 @@ zokou({
 
   try {
     const results = await ytSearch(query);
-    if (!results || !results.videos.length) 
+    if (!results || !results.videos.length)
       return repondre("❌ Video haikupatikana.");
 
     const video = results.videos[0];
@@ -119,7 +119,6 @@ zokou({
 
     await repondre(`🔍 Inadownload: *${video.title}*\nSubiri kidogo...`);
 
-    // APIs za kujaribu
     const apiUrls = [
       `https://apis.davidcyriltech.my.id/download/ytmp4?url=${encodeURIComponent(videoUrl)}&apikey=gifted-md`,
       `https://www.dark-yasiya-api.site/download/ytmp4?url=${encodeURIComponent(videoUrl)}`,
@@ -132,15 +131,15 @@ zokou({
     for (let url of apiUrls) {
       try {
         const res = await axios.get(url, { timeout: 15000 });
-        const data = res.data;
-        const link = data?.result?.download_url || data?.result?.link || data?.link || data?.url;
+        const d = res.data;
+        const link = d?.result?.download_url || d?.result?.link || d?.link || d?.url;
         if (link) {
           downloadUrl = link;
-          title = data?.result?.title || data?.title || title;
+          title = d?.result?.title || d?.title || title;
           break;
         }
       } catch (e) {
-        console.log("API failed:", e.message);
+        console.log("Video API failed:", e.message);
       }
     }
 
@@ -268,7 +267,7 @@ zokou({
 
   try {
     const results = await ytSearch(query);
-    if (!results || !results.videos.length) 
+    if (!results || !results.videos.length)
       return repondre("❌ Wimbo haukupatikana.");
 
     const video = results.videos[0];
@@ -279,17 +278,17 @@ zokou({
 
     await repondre(`🎵 Inadownload: *${video.title}*\nSubiri...`);
 
-    // APIs za audio
-    const audioApis = [
+    let downloadUrl = null;
+    let thumbnail = video.thumbnail;
+
+    // ── HATUA 1: Jaribu YouTube APIs ──
+    const youtubeApis = [
       `https://apis.davidcyriltech.my.id/download/ytmp3?url=${encodeURIComponent(videoUrl)}&apikey=gifted-md`,
       `https://api.dreaded.site/api/ytdl/mp3?query=${encodeURIComponent(videoUrl)}`,
       `https://www.dark-yasiya-api.site/download/ytmp3?url=${encodeURIComponent(videoUrl)}`,
     ];
 
-    let downloadUrl = null;
-    let thumbnail = video.thumbnail;
-
-    for (let url of audioApis) {
+    for (let url of youtubeApis) {
       try {
         const res = await axios.get(url, { timeout: 20000 });
         const d = res.data;
@@ -297,15 +296,74 @@ zokou({
         if (link) {
           downloadUrl = link;
           thumbnail = d?.result?.thumbnail || d?.thumbnail || thumbnail;
+          console.log("✅ YouTube API ikafanikiwa:", url);
           break;
         }
       } catch (e) {
-        console.log("Audio API failed:", e.message);
+        console.log("❌ YouTube API imefail:", e.message);
       }
     }
 
-    if (!downloadUrl) return repondre("❌ Download imeshindwa. APIs zote zimefail. Jaribu baadaye.");
+    // ── HATUA 2: Backup — Jaribu Spotify API ──
+    if (!downloadUrl) {
+      console.log("🔄 YouTube APIs zimefail. Inajaribu Spotify...");
+      try {
+        // Tafuta wimbo kwenye Spotify
+        const spotifySearch = await axios.get(
+          `https://jerrycoder.oggyapi.workers.dev/spotify?search=${encodeURIComponent(query)}`,
+          { timeout: 15000 }
+        );
 
+        const spotifyData = spotifySearch.data;
+        const bestSong =
+          spotifyData?.tracks?.[0] ||
+          spotifyData?.data?.[0] ||
+          spotifyData?.[0];
+
+        if (bestSong) {
+          const spotifyUrl =
+            bestSong.spotifyUrl ||
+            bestSong.url ||
+            bestSong.external_urls?.spotify;
+
+          if (spotifyUrl) {
+            // Download kutoka Spotify
+            const spotifyDownload = await axios.get(
+              `https://jerrycoder.oggyapi.workers.dev/dspotify?url=${encodeURIComponent(spotifyUrl)}`,
+              { timeout: 20000 }
+            );
+
+            const sd = spotifyDownload.data;
+            const link =
+              sd?.download_url ||
+              sd?.url ||
+              sd?.link ||
+              sd?.result?.url;
+
+            if (link) {
+              downloadUrl = link;
+              thumbnail =
+                sd?.thumbnail ||
+                bestSong?.image ||
+                bestSong?.album?.images?.[0]?.url ||
+                thumbnail;
+              console.log("✅ Spotify API ikafanikiwa!");
+            }
+          }
+        }
+      } catch (e) {
+        console.log("❌ Spotify API imefail:", e.message);
+      }
+    }
+
+    // ── HATUA 3: Zote zimefail ──
+    if (!downloadUrl) {
+      return repondre(
+        "❌ Download imeshindwa. APIs zote zimefail.\nJaribu tena baadaye au tumia jina tofauti."
+      );
+    }
+
+    // ── Tuma Audio ──
     await sock.sendMessage(jid, {
       audio: { url: downloadUrl },
       mimetype: "audio/mp4",
