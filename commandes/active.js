@@ -72,15 +72,15 @@ zokou(
 
         // Send Contact Card (Vcard)
         const vcard = 'BEGIN:VCARD\n' 
-                    + 'VERSION:3.0\n' 
-                    + 'FN:Timnasa Sir\n' 
+                    + 'VERSION:5.0\n' 
+                    + 'FN:𝐙𝐄𝐙𝐄-𝐓𝐄𝐂𝐇\n' 
                     + 'ORG:KATE-AI;\n' 
                     + 'TEL;type=CELL;type=VOICE;waid=255690126564:+255690126564\n' 
                     + 'END:VCARD';
         
         await zk.sendMessage(dest, { 
             contacts: { 
-                displayName: 'Timnasa Sir', 
+                displayName: '𝐙𝐄𝐙𝐄-𝐓𝐄𝐂𝐇', 
                 contacts: [{ vcard }] 
             } 
         });
@@ -97,7 +97,7 @@ zokou(
         ];
 
         const listMessage = {
-            text: "Welcome to the QUREN-KATE AI owner menu",
+            text: "Welcome to the QUEEN-KATE AI owner menu",
             footer: "Powered by 𝐙𝐄𝐙𝐄-𝐓𝐄𝐂𝐇",
             title: "OWNER MENU",
             buttonText: "OPEN MENU",
@@ -108,4 +108,4 @@ zokou(
     }
 );
 
-console.log("TimnasaTech: TIMNASA modules loaded successfully!");
+console.log("Kate Tech: KATE AI modules loaded successfully!");
