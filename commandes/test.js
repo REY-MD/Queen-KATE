@@ -16,7 +16,7 @@ zokou({
     const imageUrl2 = ""; 
 
     try {
-        const testMsg = `*QUEE-KATE AI IS RUNNING* ⚡\n\n` +
+        const testMsg = `*QUEEN-KATE AI IS RUNNING* ⚡\n\n` +
             `*Status:* 𝙾𝙽𝙻𝙸𝙽𝙴\n` +
             `*Engine:* 𝐙𝐄𝐙𝐄-𝐌𝐃\n` +
             `*Owner:* 𝐙𝐄𝐙𝐄-𝐓𝐄𝐂𝐇\n` +
