@@ -29,9 +29,9 @@ async (dest, zk, commandeOptions) => {
 
     // 4. Random selection from 3 Images
     const myPictures = [
-        "https://ibb.co/cXZwLF3f",
-        "https://ibb.co/cXZwLF3f",
-        "https://ibb.co/cXZwLF3f"
+        "https://o.uguu.se/alLgUEwf.jpg",
+        "https://o.uguu.se/alLgUEwf.jpg",
+        "https://o.uguu.se/alLgUEwf.jpg"
     ];
     const randomPic = myPictures[Math.floor(Math.random() * myPictures.length)];
 
