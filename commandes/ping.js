@@ -6,8 +6,8 @@ const os = require("os");
 const moment = require("moment-timezone");
 const conf = require(__dirname + "/../set");
 
-const AUDIO_URL = "https://files.catbox.moe/fw6by8.mp3";
-const THUMBNAIL_URL = "https://files.catbox.moe/tllsog.jpg";
+const AUDIO_URL = "https://d.uguu.se/BAjZhBwH.mp3";
+const THUMBNAIL_URL = "https://o.uguu.se/alLgUEwf.jpg";
 
 moment.tz.setDefault(`${conf.TZ}`);
 
