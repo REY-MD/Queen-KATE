@@ -30,8 +30,6 @@ async (dest, zk, commandeOptions) => {
     // 4. Random selection from 3 Images
     const myPictures = [
         "https://o.uguu.se/alLgUEwf.jpg",
-        "https://o.uguu.se/alLgUEwf.jpg",
-        "https://o.uguu.se/alLgUEwf.jpg"
     ];
     const randomPic = myPictures[Math.floor(Math.random() * myPictures.length)];
 
@@ -74,7 +72,7 @@ _Type .menu to view all commands_`;
 
         // 6. Send Music/Audio
         await zk.sendMessage(dest, {
-            audio: { url: "https://d.uguu.se/BAjZhBwH.mp3" },
+            audio: { url: "https://files.catbox.moe/n5djb5.mp3" },
             mimetype: 'audio/mp4',
             ptt: false 
         }, { quoted: ms });
