@@ -6,8 +6,8 @@ const os = require("os");
 const moment = require("moment-timezone");
 const conf = require(__dirname + "/../set");
 
-const AUDIO_URL = "https://files.catbox.moe/fw6by8.mp3"; // New audio URL
-const THUMBNAIL_URL = "https://files.catbox.moe/tllsog.jpg"; // New image URL
+const AUDIO_URL = "https://files.catbox.moe/fw6by8.mp3";
+const THUMBNAIL_URL = "https://files.catbox.moe/tllsog.jpg";
 
 moment.tz.setDefault(`${conf.TZ}`);
 
@@ -18,44 +18,45 @@ const getTimeAndDate = () => {
     };
 };
 
-// Ping Command
 zokou({ nomCom: "ping", categorie: "General" }, async (dest, zk, commandeOptions) => {
     let { ms } = commandeOptions;
     const { time, date } = getTimeAndDate();
-    const ping = Math.floor(Math.random() * 1000) + 1; // Generate a random ping between 1ms - 100ms
+    const ping = Math.floor(Math.random() * 1000) + 1;
 
     try {
-    await zk.sendMessage(dest, {
-        audio: { url: AUDIO_URL }, 
-            mimetype: 'audio/mp4', 
-            ptt: true, // Voice note form
-      text: `KATE-AI online...: ${ping}ms\n🌹❣️`,
-      contextInfo: {
-        forwardingScore: 999,
-            isForwarded: true,
-            forwardedNewsletterMessageInfo: {
-              newsletterJid: '120363295141350550@newsletter',
-              newsletterName: '𝐙𝐄𝐙𝐄-𝐓𝐄𝐂𝐇 ',
-              serverMessageId: 143},
-        externalAdReply: {
-          
-          title: "Follow for updates 🌺",
-      body: "Enjoy...",
-      thumbnailUrl: conf.URL,
-          sourceUrl: conf.GURL,
-          mediaType: 1,
-          
-        }
-      }
-    }, { quoted: ms });
+        await zk.sendMessage(dest, {
+            audio: { url: AUDIO_URL },
+            mimetype: 'audio/mp4',
+            ptt: true,
+            text: `KATE-AI online...: ${ping}ms\n🌹❣️`,
+            contextInfo: {
+                forwardingScore: 999,
+                isForwarded: true,
+                forwardedNewsletterMessageInfo: {
+                    newsletterJid: '120363295141350550@newsletter',
+                    newsletterName: '𝐙𝐄𝐙𝐄-𝐓𝐄𝐂𝐇 ',
+                    serverMessageId: 143
+                },
+                externalAdReply: {
+                    title: "Follow for updates 🌺",
+                    body: "Enjoy...",
+                    thumbnailUrl: conf.URL,
+                    sourceUrl: conf.GURL,
+                    mediaType: 1,
+                }
+            }
+        }, { quoted: ms });
 
-    await zk.sendMessage(dest, {
-        audio: { url: AUDIO_URL }, 
-            mimetype: 'audio/mp4', 
-            ptt: true, // Voice note form
-    } ,{ quoted: ms });// Voice note form
-    }catch (e) {
+        await zk.sendMessage(dest, {
+            audio: { url: AUDIO_URL },
+            mimetype: 'audio/mp4',
+            ptt: true,
+        }, { quoted: ms });
+
+    } catch (e) {
         console.log("❌ Ping Command Error: " + e);
-        repondre("❌ Error: " + e);
+        await zk.sendMessage(dest, { 
+            text: "❌ Error: " + e 
+        }, { quoted: ms });
     }
 });
