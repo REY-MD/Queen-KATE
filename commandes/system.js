@@ -49,22 +49,13 @@ zokou({
 
   // Array of sound file URLs
   const audioFiles = [
-    'https://files.catbox.moe/hpwsi2.mp3',
-    'https://files.catbox.moe/xci982.mp3',
-    'https://files.catbox.moe/utbujd.mp3',
-    'https://files.catbox.moe/w2j17k.m4a',
-    'https://files.catbox.moe/851skv.m4a',
-    'https://files.catbox.moe/qnhtbu.m4a',
-    'https://files.catbox.moe/lb0x7w.mp3',
-    'https://files.catbox.moe/efmcxm.mp3',
-    'https://files.catbox.moe/gco5bq.mp3',
-    'https://files.catbox.moe/26oeeh.mp3',
-    'https://files.catbox.moe/a1sh4u.mp3',
-    'https://files.catbox.moe/vuuvwn.m4a',
-    'https://files.catbox.moe/wx8q6h.mp3',
-    'https://files.catbox.moe/uj8fps.m4a',
-    'https://files.catbox.moe/dc88bx.m4a',
-    'https://files.catbox.moe/tn32z0.m4a'
+    'https://files.catbox.moe/w749y6.mp3',
+    'https://files.catbox.moe/8x9u8b.mp3',
+    'https://files.catbox.moe/hgey9n.mp3',
+    'https://files.catbox.moe/46bf53.mp3',
+    'https://files.catbox.moe/6x8upc.mp3',
+    'https://files.catbox.moe/ll04on.mp3',
+    'https://files.catbox.moe/n5djb5.mp3'
   ];
 
   // Randomly pick an audio file from the list
