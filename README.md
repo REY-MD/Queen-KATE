@@ -1,14 +1,49 @@
- ></a>
- <h1 align="center"> 🛰️𝐙𝐄𝐙𝐄𝟒𝟕-𝐌𝐃v²💻</h1>
-   
-  </marquee>
-</p>
- 
+1.👇 Star and Fork This Repo  
+[![Star and Fork This Repo](https://img.shields.io/static/v1?label=Star%20%26%20Fork%20This%20Repo&message=GitHub&color=181717&style=for-the-badge&logo=github&logoColor=white)](https://github.com/REY-MD/Queen-KATE/fork)  
+
+<br>
+
+2.👇 Get Session ID Here for wa.connection
+[![Get Session ID Here](https://img.shields.io/static/v1?label=Session%20ID&message=Generate&color=FF4500&style=for-the-badge&logo=firefox&logoColor=orange)](https://zeze-pair-qr-etsv.onrender.com/) 
 
 
-  
-<a><img 
- src='https://ibb.co/cXZwLF3f'/>
+<br>
+
+3.👇 Create Account on Heroku  
+[![Create Account on Heroku](https://img.shields.io/static/v1?label=Create%20Account&message=Heroku&color=430098&style=for-the-badge&logo=heroku&logoColor=red)](https://heroku.com)  
+
+<br>
 
 4.👇 Deploy to Heroku If your have account
 [![Deploy to Heroku](https://img.shields.io/static/v1?label=Deploy%20to&message=Heroku&color=430098&style=for-the-badge&logo=heroku&logoColor=white)](https://dashboard.heroku.com/new?template=https://github.com/REY-MD/Queen-KATE)  
+
+#🔹 DEPLOY ON OTHER PLATFORMS
+- **Render:**  
+  [![Click Here](https://img.shields.io/badge/➤Click-Here-black.svg)](https://render.com)
+
+- **ToyStack:**  
+  [![Click Here](https://img.shields.io/badge/➤Click-Here-white.svg)](https://toystack.ai)
+
+- **Koyeb:**  
+  [![Click Here](https://img.shields.io/badge/➤Click-Here-green.svg)](https://koyeb.com)
+
+- **PANEL:**
+- 
+   [![Click Here](https://img.shields.io/badge/➤Click-Here-white.svg)](https://host.talkdrove.com/auth/signup?ref=7D90F312)
+  
+ # Supported Versions Node Versions
+
+Please Use Node Version Higher to Get The Best Performance.
+
+| Version | Supported          |
+| ------- | ------------------ |
+| 14.x   | :x: |
+| 16.x   | ❗                |
+| 18.x   | :white_check_mark: |
+| 20.x   | ✅                |
+
+## Support 
+<a href="https://whatsapp.com/channel/0029VaeRrcnADTOKzivM0S1r" target="_blank">
+    <img alt="whatsapp Group" src="https://img.shields.io/badge/ Whatsapp Support Channel -25D366?style=for-the-badge&logo=whatsapp&logoColor=white" />
+  </a>
+</p>
