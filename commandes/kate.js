@@ -1,6 +1,6 @@
 const { zokou } = require('../framework/zokou');
 
-zokou({ nomCom: "kate", categorie: "General", reaction: "🛠️" }, async (dest, zk, commandeOptions) => {
+zokou({ nomCom: "kate-queen", categorie: "General", reaction: "🛠️" }, async (dest, zk, commandeOptions) => {
   const { ms, repondre, verifGroupe } = commandeOptions;
 
   const sender = ms.key.participant || ms.key.remoteJid;
