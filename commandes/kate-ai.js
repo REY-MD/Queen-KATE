@@ -4,7 +4,7 @@ const { format } = require("util");
 
 zokou({
   nomCom: "kate-ai",
-  reaction: "ℹ️",
+  reaction: "💝",
   categorie: "General"
 }, async (dest, zk, commandeOptions) => {
   const { repondre, ms } = commandeOptions;
@@ -24,9 +24,9 @@ zokou({
 
     // 3. Ujumbe wa Details
     const message = `
-🌟 *QIEEN-KATE AI DETAILS* 🌟
+🌟 *QUEEN-KATE AI DETAILS* 🌟
 
-👤 *Developer:* Timnasa
+👤 *Developer:* 𝐙𝐄𝐙𝐄-𝐓𝐄𝐂𝐇
 🔗 *GitHub:* Undefined
 🤖 *Model:* Zokou / Base64 Framework
 ⏳ *Uptime:* ${hours}h ${minutes}m ${seconds}s
