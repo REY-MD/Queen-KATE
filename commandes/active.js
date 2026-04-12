@@ -6,7 +6,7 @@ const { conf } = require('../set');
 // Configuration Constants
 const channelJid = "120363295141350550@newsletter";
 const audioUrl = "https://files.catbox.moe/lqx6sp.mp3";
-const botLogo = "https://files.catbox.moe/sez5vx.jpg";
+const botLogo = "https://ibb.co/cXZwLF3f";
 
 // COMMAND: KATE-AI
 zokou(
