@@ -39,7 +39,7 @@ zokou({
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
                     newsletterJid: channelJid,
-                    newsletterName: "Queen-KARE Official Updates",
+                    newsletterName: "Queen-KATE Official Updates",
                     serverMessageId: 1
                 }
             }
