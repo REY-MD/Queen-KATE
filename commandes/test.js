@@ -9,10 +9,10 @@ zokou({
 }, async (dest, zk, commandeOptions) => {
     const { ms, repondre } = commandeOptions;
     const channelJid = "120363295141350550@newsletter";
-    const audioUrl = "https://files.catbox.moe/lqx6sp.mp3";
+    const audioUrl = "https://d.uguu.se/BAjZhBwH.mp3";
     
     // Media Links
-    const imageUrl1 = "https://files.catbox.moe/sez5vx.jpg"; 
+    const imageUrl1 = "https://o.uguu.se/alLgUEwf.jpg"; 
     const imageUrl2 = ""; 
 
     try {
