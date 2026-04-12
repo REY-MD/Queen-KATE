@@ -1,6 +1,14 @@
 <a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Black+Ops+One&size=70&pause=500&color=008080&center=true&width=1150&height=200&lines=QUEEN-KATE-AI-ENJOYING" alt="Typing SVG" /></a>
 </div>
 
+  </marquee>
+</p>
+ 
+
+
+  
+<a><img src='https://o.uguu.se/alLgUEwf.jpg'/>
+
 1.👇 Star and Fork This Repo  
 [![Star and Fork This Repo](https://img.shields.io/static/v1?label=Star%20%26%20Fork%20This%20Repo&message=GitHub&color=181717&style=for-the-badge&logo=github&logoColor=white)](https://github.com/REY-MD/Queen-KATE/fork)  
 
