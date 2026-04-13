@@ -1,73 +1,58 @@
-"use strict";
+const { zokou } = require('../framework/zokou');
 
-const { zokou } = require("../framework/zokou");
+zokou({ nomCom: "test", categorie: "General", reaction: "🛠️" }, async (dest, zk, commandeOptions) => {
+  const { ms, repondre, verifGroupe } = commandeOptions;
 
-zokou({
-    nomCom: "test",
-    categorie: "General",
-    reaction: "🚀"
-}, async (dest, zk, commandeOptions) => {
-    const { ms, repondre } = commandeOptions;
-    const channelJid = "120363295141350550@newsletter";
-    const audioUrl = "https://files.catbox.moe/n5djb5.mp3";
-    
-    // Media Links
-    const imageUrl1 = "https://o.uguu.se/alLgUEwf.jpg"; 
-    const imageUrl2 = ""; 
+  const sender = ms.key.participant || ms.key.remoteJid;
+  const userName = ms.pushName || "Tester";
 
-    try {
-        const testMsg = `*QUEEN-KATE AI IS RUNNING* ⚡\n\n` +
-            `*Status:* 𝙾𝙽𝙻𝙸𝙽𝙴\n` +
-            `*Engine:* 𝐙𝐄𝐙𝐄-𝐌𝐃\n` +
-            `*Owner:* 𝐙𝐄𝐙𝐄-𝐓𝐄𝐂𝐇\n` +
-            `*Timestamp:* ${new Date().toLocaleString()}\n\n` +
-            `_System is running smoothly with media support._`;
+  console.log(`[DEBUG] btest triggered by ${sender} in ${dest}`);
 
-        // 1. Send First Image with Caption
-        await zk.sendMessage(dest, {
-            image: { url: imageUrl1 },
-            caption: testMsg,
-            contextInfo: {
-                forwardingScore: 999,
-                isForwarded: true,
-                forwardedNewsletterMessageInfo: {
-                    newsletterJid: channelJid,
-                    newsletterName: "𝐙𝐄𝐙𝐄-𝐓𝐄𝐂𝐇",
-                    serverMessageId: 1
-                }
-            }
-        }, { quoted: ms });
+  if (!verifGroupe) {
+    console.log(`[DEBUG] btest: Not a group chat`);
+    await repondre(
+      `KATE AI\n\n◈━━━━━━━━━━━━━━━━◈\n` +
+      `│❒ HEY, ${userName}! 😡 This works better in a group, but fine, let’s test these buttons! 🚀\n` +
+      `◈━━━━━━━━━━━━━━━━◈`
+    );
+  }
 
-        // 2. Send Second Image
-        await zk.sendMessage(dest, {
-            image: { url: imageUrl2 },
-            contextInfo: {
-                forwardingScore: 999,
-                isForwarded: true,
-                forwardedNewsletterMessageInfo: {
-                    newsletterJid: channelJid,
-                    newsletterName: "𝐙𝐄𝐙𝐄-𝐓𝐄𝐂𝐇"
-                }
-            }
-        }, { quoted: ms });
+  const buttonMessage = {
+    text:
+      `KATE AI\n\n◈━━━━━━━━━━━━━━━━◈\n` +
+      `│❒ WELCOME, ${userName}! 😎 Time to test the POWER of KATE AI!\n` +
+      `│❒ Pick a button and unleash the chaos! 💥\n` +
+      `│❒ Powered by 𝘡𝘌𝘡𝘌47 𝘛𝘌𝘊𝘏\n` +
+      `◈━━━━━━━━━━━━━━━━◈`,
+    footer: "KATE AI Testing Suite",
+    buttons: [
+      {
+        buttonId: `ping_${ms.key.id}`,
+        buttonText: { displayText: "⚡ Ping" },
+        type: 1,
+      },
+      {
+        buttonId: `owner_${ms.key.id}`,
+        buttonText: { displayText: "👑 Owner" },
+        type: 1,
+      },
+    ],
+    headerType: 1,
+  };
 
-        // 3. Send Audio (FIXED: Added the missing closing quote for mimetype)
-        await zk.sendMessage(dest, {
-            audio: { url: audioUrl },
-            mimetype: 'audio/mp4',
-            ptt: true,
-            contextInfo: {
-                forwardingScore: 999,
-                isForwarded: true,
-                forwardedNewsletterMessageInfo: {
-                    newsletterJid: channelJid,
-                    newsletterName: "𝐙𝐄𝐙𝐄-𝐓𝐄𝐂𝐇"
-                }
-            }
-        }, { quoted: ms });
+  console.log(`[DEBUG] btest: Button message prepared`);
 
-    } catch (error) {
-        console.error("Test Command Error:", error);
-        repondre("❌ Error: " + error.message);
-    }
+  try {
+    await zk.sendMessage(dest, buttonMessage, { quoted: ms });
+    console.log(`[DEBUG] btest: Button message sent successfully`);
+  } catch (e) {
+    console.error(`[DEBUG] btest: Error sending button message: ${e.message}`);
+    await repondre(
+      `KATE AI\n\n◈━━━━━━━━━━━━━━━━◈\n` +
+      `│❒ THIS IS INFURIATING, ${userName}! 😤 Buttons failed: ${e.message}!\n` +
+      `│❒ Try these instead: .ping ⚡ or .owner 👑\n` +
+      `│❒ I’ll SMASH THIS TRASH SYSTEM! 🚫\n` +
+      `◈━━━━━━━━━━━━━━━━◈`
+    );
+  }
 });
