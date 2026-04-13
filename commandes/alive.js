@@ -1,84 +1,61 @@
-
-const { zokou } = require(__dirname + "/../framework/zokou");
-const os = require("os");
+const { zokou } = require('../framework/zokou');
+const { addOrUpdateDataInAlive, getDataFromAlive } = require('../bdd/alive');
 const moment = require("moment-timezone");
 const s = require(__dirname + "/../set");
 
-zokou({
-    nomCom: "alive",
-    categorie: "General",
-    reaction: "⚡"
-},
-async (dest, zk, commandeOptions) => {
-    const { ms, auteurMessage, repondre } = commandeOptions;
+zokou(
+    {
+        nomCom: 'alive',
+        categorie: 'General',
+        reaction: "🪴"
+    },
+    async (dest, zk, { ms, arg, repondre, superUser }) => {
+        const data = await getDataFromAlive();
+        const time = moment().tz('Etc/GMT').format('HH:mm:ss');
+        const date = moment().format('DD/MM/YYYY');
+        const mode = (s.MODE.toLowerCase() === "yes") ? "public" : "private";
 
-    // 1. Calculate Latency (Speed)
-    const start = Date.now();
-    const end = Date.now();
-    const latency = end - start;
+        if (!arg || !arg[0]) {
+            let aliveMsg;
 
-    // 2. Uptime details
-    const uptime = process.uptime();
-    const hours = Math.floor(uptime / 3600);
-    const minutes = Math.floor((uptime % 3600) / 60);
-    const seconds = Math.floor(uptime % 60);
-
-    // 3. Tanzania Time (EAT)
-    moment.tz.setDefault('Africa/Dar_es_Salaam');
-    const currentTime = moment().format('HH:mm:ss');
-
-    // 4. Random selection from 3 Images
-    const myPictures = [
-        "https://o.uguu.se/alLgUEwf.jpg",
-    ];
-    const randomPic = myPictures[Math.floor(Math.random() * myPictures.length)];
-
-    // 5. English Speed Message
-    const speedMsg = `*Queen-KATE ɪs ᴏɴʟɪɴᴇ* ⚡
-
-*Hi @${auteurMessage.split("@")[0]}*
-The bot is active and responding!
-
-━━━━━━━━━━━━━━━━━━━━━
-🚀 *SPEED:* ${latency} ms
-🌟 *OWNER:* ${s.OWNER_NAME || "𝐙𝐄𝐙𝐄-𝐓𝐄𝐂𝐇"}
-🕒 *TIME:* ${currentTime} EAT
-⌛ *UPTIME:* ${hours}h ${minutes}m ${seconds}s
-🖥️ *PLATFORM:* ${os.platform()}
-🛰️ *RAM:* ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} GB
-━━━━━━━━━━━━━━━━━━━━━
-
-_Type .menu to view all commands_`;
-
-    try {
-        // Send Image with English context
-        await zk.sendMessage(dest, { 
-            image: { url: randomPic },
-            caption: speedMsg,
-            mentions: [auteurMessage],
-            contextInfo: {
-                forwardingScore: 999,
-                isForwarded: true,
-                externalAdReply: {
-                    title: "Queen-KATE SYSTEM TEST",
-                    body: "Status: Online & Stable",
-                    thumbnailUrl: randomPic,
-                    sourceUrl: "https://whatsapp.com/channel/120363295141350550@newsletter",
-                    mediaType: 1,
-                    renderLargerThumbnail: true
+            if (data) {
+                const { message, lien } = data;
+                aliveMsg = `KATE AI\n\n◈━━━━━━━━━━━━━━━━◈\n│❒ *🔥 KATE AI 𝐢𝐬 𝐀𝐋𝐈𝐕𝐄, Yo!* 🔥\n│❒ *👑 𝐎𝐰𝐧𝐞𝐫*: ${s.OWNER_NAME}\n│❒ *🌐 𝐌𝐨𝐝𝐞*: ${mode}\n│❒ *📅 𝐃𝐚𝐭𝐞*: ${date}\n│❒ *⏰ 𝐓𝐢𝐦𝐞 (GMT)*: ${time}\n│❒ *💬 𝐌𝐞𝐬𝐬𝐚𝐠𝐞*: ${message}\n│❒ *🤖 𝐏𝐨𝐰𝐞𝐫𝐞𝐝 𝐛𝐲 𝘡𝘌𝘡𝘌 𝘛𝘌𝘊𝘏*\n◈━━━━━━━━━━━━━━━━◈`;
+                try {
+                    if (lien) {
+                        if (lien.match(/\.(mp4|gif)$/i)) {
+                            await zk.sendMessage(dest, { 
+                                video: { url: lien }, 
+                                caption: aliveMsg 
+                            }, { quoted: ms });
+                        } else if (lien.match(/\.(jpeg|png|jpg)$/i)) {
+                            await zk.sendMessage(dest, { 
+                                image: { url: lien }, 
+                                caption: aliveMsg 
+                            }, { quoted: ms });
+                        } else {
+                            repondre(aliveMsg);
+                        }
+                    } else {
+                        repondre(aliveMsg);
+                    }
+                } catch (e) {
+                    console.error("Error:", e);
+                    repondre(`KATE AI\n\n◈━━━━━━━━━━━━━━━━◈\n│❒ OOPS! KATE AI failed to show off: ${e.message} 😡 Try again! 😣\n◈━━━━━━━━━━━━━━━━◈`);
                 }
+            } else {
+                aliveMsg = `KATE AI\n\n◈━━━━━━━━━━━━━━━━◈\n│❒ *🔥 KATE AI 𝐢𝐬 𝐀𝐋𝐈𝐕𝐄, Yo!* 🔥\n│❒ *👑 𝐎𝐰𝐧𝐞𝐫*: ${s.OWNER_NAME}\n│❒ *🌐 𝐌𝐨𝐝𝐞*: ${mode}\n│❒ *📅 𝐃𝐚𝐭𝐞*: ${date}\n│❒ *⏰ 𝐓𝐢𝐦𝐞 (GMT)*: ${time}\n│❒ *💬 𝐌𝐞𝐬𝐬𝐚𝐠𝐞*: Yo, I'm KATE AI, ready to rock! Set a custom vibe with *alive [message];[link]*! 😎\n│❒ *🤖 𝐏𝐨𝐰𝐞𝐫𝐞𝐝 𝐛𝐲 𝘡𝘌𝘡𝘌 𝘛𝘌𝘊𝘏*\n◈━━━━━━━━━━━━━━━━◈`;
+                repondre(aliveMsg);
             }
-        }, { quoted: ms });
+        } else {
+            if (!superUser) { 
+                repondre(`KATE{AI\n\n◈━━━━━━━━━━━━━━━━◈\n│❒ 🛑 Yo, only KATE AI can mess with ZEZE TECH vibe! 😡\n◈━━━━━━━━━━━━━━━━◈`); 
+                return;
+            }
 
-        // 6. Send Music/Audio
-        await zk.sendMessage(dest, {
-            audio: { url: "https://files.catbox.moe/n5djb5.mp3" },
-            mimetype: 'audio/mp4',
-            ptt: false 
-        }, { quoted: ms });
-
-    } catch (e) {
-        console.log("Speed Error: " + e);
-        repondre("An error occurred: " + e.message);
+            const [texte, tlien] = arg.join(' ').split(';');
+            await addOrUpdateDataInAlive(texte, tlien);
+            repondre(`KATE AI\n\n◈━━━━━━━━━━━━━━━━◈\n│❒ ✅ KATE AI alive message updated! You’re killing it! 🔥\n◈━━━━━━━━━━━━━━━━◈`);
+        }
     }
-});
+);
