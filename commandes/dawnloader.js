@@ -120,9 +120,7 @@ zokou({
     await repondre(`🔍 Inadownload: *${video.title}*\nSubiri kidogo...`);
 
     const apiUrls = [
-      `https://apis.davidcyriltech.my.id/download/ytmp4?url=${encodeURIComponent(videoUrl)}&apikey=gifted-md`,
-      `https://www.dark-yasiya-api.site/download/ytmp4?url=${encodeURIComponent(videoUrl)}`,
-      `https://api.dreaded.site/api/ytdl/video?query=${encodeURIComponent(videoUrl)}`,
+      `https://apis-keith.vercel.app/download/dlmp4?url=${urlYt}`,
     ];
 
     let downloadUrl = null;
@@ -187,7 +185,7 @@ zokou({
 
   const sources = [
     async () => {
-      const res = await axios.get(`https://api.popcat.xyz/lyrics?song=${encodeURIComponent(query)}`, { timeout: 10000 });
+      const res = await axios.get(`https://apis-keith.vercel.app/download/lyrics?url=${urlYt}`, { timeout: 10000 });
       if (!res.data?.lyrics) throw new Error("No lyrics");
       return {
         title: res.data.title || query,
