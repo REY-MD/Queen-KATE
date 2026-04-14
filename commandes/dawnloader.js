@@ -90,104 +90,119 @@ const makeRepondre = (sock, jid, ms) => async (text) => {
 );
 
 // ─────────────────────────────────────────
-// 🎬 MOVIE COMMAND
+// 🎬 TRAILER COMMAND
 // ─────────────────────────────────────────
-zokou({
-  nomCom: "trailer",
-  aliases: ["trailer", "trailer"],
-  categorie: "Search",
-  reaction: "🎬",
-}, async (jid, sock, data) => {
-  const { arg, ms } = data;
-  const repondre = makeRepondre(sock, jid, ms);
+  zokou(
+  {
+    nomCom: "trailer",
+    aliases: ["trl", "trailer"],
+    categorie: "Search",
+    reaction: "🎬",
+  },
+  async (jid, sock, data) => {
+    const { arg, ms } = data;
+    const repondre = makeRepondre(sock, jid, ms);
 
-  if (!arg[0]) return repondre("❌ Taja jina la movie.\nMfano: .movie Avengers");
+    if (!arg[0]) return repondre("❌ Taja jina la movie.\nMfano: *.trailer Avengers*");
 
-  const query = arg.join(" ");
-  await repondre("🔍 Inatafuta movie...");
-
-  try {
-    // ── STEP 1: OMDB - Movie Info ──
-    const apiKey = conf.OMDB_KEY || "38f19ae1";
-    const searchRes = await axios.get(
-      `http://www.omdbapi.com/?s=${encodeURIComponent(query)}&apikey=${apiKey}`,
-      { timeout: 10000 }
-    );
-
-    if (searchRes.data.Response === "False")
-      return repondre(`❌ Movie haikupatikana: ${searchRes.data.Error}`);
-
-    const movieID = searchRes.data.Search[0].imdbID;
-    const detailsRes = await axios.get(
-      `http://www.omdbapi.com/?i=${movieID}&apikey=${apiKey}`,
-      { timeout: 10000 }
-    );
-    const movie = detailsRes.data;
-
-    if (movie.Response === "False")
-      return repondre(`❌ Error: ${movie.Error}`);
-
-    // ── STEP 2: TMDB - Pata Trailer ──
-    const tmdbKey = conf.TMDB_KEY || "8265bd1679663a7ea12ac168da84d2e8";
-    let trailerUrl = null;
-    let trailerVideoUrl = null;
+    const query = arg.join(" ");
 
     try {
-      // Tafuta movie kwenye TMDB kutumia IMDB ID
+      // ── STEP 1: OMDB - Movie Info ──
+      const apiKey = conf.OMDB_KEY || "38f19ae1";
+      const searchRes = await axios.get(
+        `http://www.omdbapi.com/?s=${encodeURIComponent(query)}&apikey=${apiKey}`,
+        { timeout: 10000 }
+      );
+
+      if (searchRes.data.Response === "False")
+        return repondre(`❌ Movie haikupatikana: ${searchRes.data.Error}`);
+
+      const movieID = searchRes.data.Search[0].imdbID;
+      const detailsRes = await axios.get(
+        `http://www.omdbapi.com/?i=${movieID}&apikey=${apiKey}`,
+        { timeout: 10000 }
+      );
+      const movie = detailsRes.data;
+
+      if (movie.Response === "False")
+        return repondre(`❌ Error: ${movie.Error}`);
+
+      // ── STEP 2: TMDB - Pata Trailer YouTube Key ──
+      const tmdbKey = conf.TMDB_KEY || "8265bd1679663a7ea12ac168da84d2e8";
+
       const tmdbRes = await axios.get(
         `https://api.themoviedb.org/3/find/${movieID}?api_key=${tmdbKey}&external_source=imdb_id`,
         { timeout: 10000 }
       );
 
       const tmdbMovie = tmdbRes.data.movie_results[0];
+      if (!tmdbMovie) return repondre("❌ Trailer haikupatikana kwa movie hii.");
 
-      if (tmdbMovie) {
-        // Pata trailer videos
-        const videosRes = await axios.get(
-          `https://api.themoviedb.org/3/movie/${tmdbMovie.id}/videos?api_key=${tmdbKey}`,
-          { timeout: 10000 }
+      const videosRes = await axios.get(
+        `https://api.themoviedb.org/3/movie/${tmdbMovie.id}/videos?api_key=${tmdbKey}`,
+        { timeout: 10000 }
+      );
+
+      const videos = videosRes.data.results;
+      const trailer = videos.find(v => v.type === "Trailer" && v.site === "YouTube") || videos[0];
+      if (!trailer) return repondre("❌ Hakuna trailer YouTube kwa movie hii.");
+
+      const ytUrl = `https://www.youtube.com/watch?v=${trailer.key}`;
+
+      // ── STEP 3: Download na FALLBACK ──
+      let videoUrl = null;
+
+      // Jaribu API ya kwanza
+      try {
+        const dl1 = await axios.get(
+          `https://api.siputzx.my.id/api/d/ytmp4?url=${encodeURIComponent(ytUrl)}`,
+          { timeout: 30000 }
         );
-
-        const videos = videosRes.data.results;
-        const trailer = videos.find(v => v.type === "Trailer" && v.site === "YouTube")
-                     || videos[0];
-
-        if (trailer) {
-          trailerUrl = `https://www.youtube.com/watch?v=${trailer.key}`;
-          // Tumia yt-dlp-web au invidious kupata direct video link
-          trailerVideoUrl = `https://inv.tux.pizza/latest_version?id=${trailer.key}&itag=18`;
+        if (dl1.data?.status && dl1.data?.data?.url) {
+          videoUrl = dl1.data.data.url;
         }
-      }
-    } catch (trailerErr) {
-      console.log("Trailer fetch failed:", trailerErr.message);
-    }
+      } catch (_) {}
 
-    // ── STEP 3: Tuma Trailer Video (kama inapatikana) ──
-    if (trailerVideoUrl) {
-      await repondre("🎞️ Inapakua trailer... Subiri kidogo!");
+      // Kama imeshindwa → jaribu API ya pili
+      if (!videoUrl) {
+        try {
+          const dl2 = await axios.get(
+            `https://api.davidcyriltech.my.id/download/youtube?url=${encodeURIComponent(ytUrl)}`,
+            { timeout: 30000 }
+          );
+          if (dl2.data?.success && dl2.data?.result?.download_url) {
+            videoUrl = dl2.data.result.download_url;
+          }
+        } catch (_) {}
+      }
+
+      if (!videoUrl) return repondre("❌ Imeshindwa kupakua trailer. Jaribu tena baadaye!");
+
+      // ── STEP 4: Tuma Trailer ──
       await sock.sendMessage(jid, {
-        video: { url: trailerVideoUrl },
-        caption: `🎬 *${movie.Title}* - Official Trailer`,
+        video: { url: videoUrl },
+        caption: `🎬 *${movie.Title}* (${movie.Year})\n\n⭐ IMDb: *${movie.imdbRating}/10*\n🎭 Genre: ${movie.Genre}\n📝 ${movie.Plot}`,
         mimetype: "video/mp4",
         contextInfo: {
           ...contextBase,
           externalAdReply: {
-            title: `🎬 ${movie.Title} - Trailer`,
-            body: `IMDb: ${movie.imdbRating}/10`,
+            title: `🎬 ${movie.Title} - Official Trailer`,
+            body: `⭐ IMDb: ${movie.imdbRating}/10 | ${movie.Year}`,
             thumbnailUrl: movie.Poster !== "N/A" ? movie.Poster : conf.URL,
-            sourceUrl: trailerUrl,
+            sourceUrl: ytUrl,
             mediaType: 1,
             renderLargerThumbnail: true,
           },
         },
       }, { quoted: ms });
-    }
 
-  } catch (err) {
-    console.error("Movie error:", err);
-    return repondre("❌ Hitilafu imetokea. Jaribu tena.");
+    } catch (err) {
+      console.error("Trailer error:", err.message);
+      return repondre("❌ Hitilafu imetokea. Jaribu tena.");
+    }
   }
-});
+);
 
 // ─────────────────────────────────────────
 // 🎥 VIDEO COMMAND
