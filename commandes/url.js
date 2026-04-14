@@ -1,5 +1,5 @@
 const { Sticker, createSticker, StickerTypes } = require('wa-sticker-formatter');
-const { zokou } = require("../framework/zokou");
+const { zokou} = require("../framework/zokou");
 const { downloadMediaMessage } = require('@whiskeysockets/baileys');
 const fs = require("fs-extra");
 const ffmpeg = require("fluent-ffmpeg");
@@ -28,16 +28,9 @@ async function uploadToCatbox(Path) {
 }
 
 async function convertToMp3(inputPath, outputPath) {
-    return new Promise((resolve, reject) => {
-        ffmpeg(inputPath)
-            .toFormat("mp3")
-            .on("error", (err) => reject(err))
-            .on("end", () => resolve(outputPath))
-            .save(outputPath);
-    });
 }
 
-zokou({ nomCom: "url", categorie: "General", reaction: "☣️" }, async (origineMessage, zk, commandeOptions) => {
+zokou({ nomCom: "url", categorie: "General", reaction: "👨🏿‍💻" }, async (origineMessage, zk, commandeOptions) => {
     const { msgRepondu, repondre } = commandeOptions;
 
     if (!msgRepondu) {
@@ -88,13 +81,13 @@ zokou({ nomCom: "url", categorie: "General", reaction: "☣️" }, async (origin
         // Respond with the URL based on media type
         switch (mediaType) {
             case 'image':
-                repondre(`KATE AI  url: ${catboxUrl}`);
+                repondre(`KATE AI url: ${catboxUrl}`);
                 break;
             case 'video':
                 repondre(`KATE AI url: ${catboxUrl}`);
                 break;
             case 'audio':
-                repondre(`KATE AI  url: ${catboxUrl}`);
+                repondre(`KATE AI url: ${catboxUrl}`);
                 break;
             default:
                 repondre('An unknown error occurred.');
@@ -104,6 +97,4 @@ zokou({ nomCom: "url", categorie: "General", reaction: "☣️" }, async (origin
         console.error('Error while creating your URL:', error);
         repondre('Oops, an error occurred.');
     }
-});
-
-          
+})
