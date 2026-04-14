@@ -107,7 +107,7 @@ zokou({
         if (response.data.status) {
             let stickerMess = new Sticker(response.data.result, {
                 pack: 'KATE AI',
-                author: 'Timoth',
+                author: '𝐙𝐄𝐙𝐄-𝐓𝐄𝐂𝐇',
                 type: StickerTypes.CROPPED,
                 quality: 70
             });
