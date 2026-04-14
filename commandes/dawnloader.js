@@ -7,7 +7,7 @@ const contextBase = {
   isForwarded: true,
   forwardedNewsletterMessageInfo: {
     newsletterJid: "120363295141350550@newsletter",
-    newsletterName: "𝐙𝐄𝐙𝐄𝟒𝟕-𝐌𝐃 V²",
+    newsletterName: "QUEEN-KATE AI",
     serverMessageId: 143,
   },
 };
@@ -19,7 +19,7 @@ const makeRepondre = (sock, jid, ms) => async (text) => {
       ...contextBase,
       externalAdReply: {
         title: "QUEEN-KATE-AI",
-        body: "Powered by 𝐙𝐄𝐙𝐄𝟒𝟕-𝐌𝐃 V²",
+        body: "Powered by 𝐙𝐄𝐙𝐄-𝐓𝐄𝐂𝐇",
         thumbnailUrl: conf.URL,
         mediaType: 1,
         renderLargerThumbnail: false,
