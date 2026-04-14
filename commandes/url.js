@@ -88,13 +88,13 @@ zokou({ nomCom: "url", categorie: "General", reaction: "☣️" }, async (origin
         // Respond with the URL based on media type
         switch (mediaType) {
             case 'image':
-                repondre(`charles ke  url: ${catboxUrl}`);
+                repondre(`KATE AI  url: ${catboxUrl}`);
                 break;
             case 'video':
-                repondre(`charles ke  url: ${catboxUrl}`);
+                repondre(`KATE AI url: ${catboxUrl}`);
                 break;
             case 'audio':
-                repondre(`Charles ke  url: ${catboxUrl}`);
+                repondre(`KATE AI  url: ${catboxUrl}`);
                 break;
             default:
                 repondre('An unknown error occurred.');
