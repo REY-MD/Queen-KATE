@@ -33,7 +33,7 @@ zokou({
     const lastRoundOdd = (Math.random() * (2.80 - 1.05) + 1.05).toFixed(2);
     const lastRoundTime = getTime(-50); // Previous round approx 50 seconds ago
 
-    let signalMsg = `🚀 *TIMNASA-MD AVIATOR PREDICTOR* 🚀\n\n`;
+    let signalMsg = `🚀 *KATE AI AVIATOR PREDICTOR* 🚀\n\n`;
     signalMsg += `🏢 *COMPANY:* ${company}\n`;
     signalMsg += `👤 *REQUESTED BY:* @${auteurMessage.split('@')[0]}\n`;
     signalMsg += `───────────────────\n\n`;
