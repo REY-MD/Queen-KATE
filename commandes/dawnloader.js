@@ -28,10 +28,10 @@ const makeRepondre = (sock, jid, ms) => async (text) => {
   }, { quoted: ms });
 };
 
-zokou(
+ zokou(
   {
     nomCom: "play",
-    aliases: ["music", "song"],
+    aliases: ["music", "music"],
     categorie: "Media",
   },
   async (dest, zk, commandeOptions) => {
@@ -41,10 +41,8 @@ zokou(
     const q = arg.join(" ");
     if (!q) return repondreFormate("❌ Tafadhali weka jina la wimbo!\n\n📌 Mfano: *play Rema Calm Down*");
 
-    await repondreFormate("🔍 Inatafuta wimbo... Subiri kidogo!");
-
     try {
-      // ── STEP 1: Search ──
+      // ── STEP 1 + 2: Search → Download → Tuma ──
       const searchUrl = `https://jerrycoder.oggyapi.workers.dev/spotify?search=${encodeURIComponent(q)}`;
       const searchRes = await axios.get(searchUrl, { timeout: 20000 });
 
@@ -55,14 +53,6 @@ zokou(
       const bestSong = searchRes.data.tracks[0];
       const { trackName, artist, spotifyUrl, thumbnail } = bestSong;
 
-      await repondreFormate(
-        `🎵 *Wimechagua Wimbo:*\n\n` +
-        `📀 *Jina:* ${trackName}\n` +
-        `🎤 *Msanii:* ${artist}\n\n` +
-        `⬇️ Inapakua... Subiri!`
-      );
-
-      // ── STEP 2: Download ──
       const dlUrl = `https://jerrycoder.oggyapi.workers.dev/dspotify?url=${encodeURIComponent(spotifyUrl)}`;
       const dlRes = await axios.get(dlUrl, { timeout: 30000 });
 
@@ -75,7 +65,6 @@ zokou(
       const artistName = dlData.artist || artist;
       const thumb = dlData.thumbnail || thumbnail;
 
-      // ── STEP 3: Tuma Audio ──
       await zk.sendMessage(dest, {
         audio: { url: dlData.download_link },
         mimetype: "audio/mpeg",
