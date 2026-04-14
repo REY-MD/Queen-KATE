@@ -26,7 +26,7 @@ zokou({
     const message = `
 🌟 *KATE AI DETAILS* 🌟
 
-👤 *Developer:* Timnasa
+👤 *Developer:* 𝐙𝐄𝐙𝐄-𝐓𝐄𝐂𝐇
 🔗 *GitHub:* https://github.com/
 🤖 *Model:* Zokou / Base64 Framework
 ⏳ *Uptime:* ${hours}h ${minutes}m ${seconds}s
