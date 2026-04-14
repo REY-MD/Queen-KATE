@@ -343,40 +343,66 @@ zokou({
   let lyricsData = null;
 
   const sources = [
+    // ── SOURCE 1: lrclib.net (free, no API key) ──
     async () => {
       const res = await axios.get(
-        `https://api.popcat.xyz/lyrics?song=${encodeURIComponent(query)}`,
+        `https://lrclib.net/api/search?q=${encodeURIComponent(query)}`,
         { timeout: 10000 }
       );
-      if (!res.data?.lyrics) throw new Error("Popcat failed");
+      const results = res.data;
+      if (!results || results.length === 0) throw new Error("lrclib no results");
+      const best = results.find(r => r.plainLyrics) || results[0];
+      if (!best?.plainLyrics) throw new Error("lrclib no lyrics");
       return {
-        title: res.data.title || query,
-        author: res.data.artist || "Unknown",
-        lyrics: res.data.lyrics,
-        thumbnail: res.data.image || conf.URL,
-        link: res.data.url || "",
-      };
-    },
-    async () => {
-      const res = await axios.get(
-        `https://lyrist.vercel.app/api/${encodeURIComponent(query)}`,
-        { timeout: 10000 }
-      );
-      if (!res.data?.content) throw new Error("Lyrist failed");
-      return {
-        title: res.data.title || query,
-        author: res.data.artist || "Unknown",
-        lyrics: res.data.content,
-        thumbnail: res.data.image || conf.URL,
+        title: best.trackName || query,
+        author: best.artistName || "Unknown",
+        lyrics: best.plainLyrics,
+        thumbnail: conf.URL,
         link: "",
       };
     },
+
+    // ── SOURCE 2: Genius API (reliable sana) ──
+    async () => {
+      const geniusKey = conf.GENIUS_KEY || ""; // weka key yako hapa
+      if (!geniusKey) throw new Error("No Genius key");
+      const searchRes = await axios.get(
+        `https://api.genius.com/search?q=${encodeURIComponent(query)}`,
+        {
+          headers: { Authorization: `Bearer ${geniusKey}` },
+          timeout: 10000,
+        }
+      );
+      const hit = searchRes.data?.response?.hits?.[0]?.result;
+      if (!hit) throw new Error("Genius no results");
+
+      // Scrape lyrics from Genius page
+      const pageRes = await axios.get(hit.url, { timeout: 15000 });
+      const html = pageRes.data;
+      const lyricsMatch = html.match(/data-lyrics-container="true"[^>]*>([\s\S]*?)<\/div>/g);
+      if (!lyricsMatch) throw new Error("Genius scrape failed");
+      const rawLyrics = lyricsMatch
+        .join("\n")
+        .replace(/<br\s*\/?>/gi, "\n")
+        .replace(/<[^>]+>/g, "")
+        .trim();
+
+      return {
+        title: hit.title || query,
+        author: hit.primary_artist?.name || "Unknown",
+        lyrics: rawLyrics,
+        thumbnail: hit.song_art_image_url || conf.URL,
+        link: hit.url || "",
+      };
+    },
+
+    // ── SOURCE 3: some-random-api (fallback) ──
     async () => {
       const res = await axios.get(
         `https://some-random-api.com/lyrics?title=${encodeURIComponent(query)}`,
         { timeout: 10000 }
       );
-      if (!res.data?.lyrics) throw new Error("Some-Random-API failed");
+      if (!res.data?.lyrics) throw new Error("some-random-api failed");
       return {
         title: res.data.title || query,
         author: res.data.author || "Unknown",
@@ -390,7 +416,7 @@ zokou({
   for (const fetchLyrics of sources) {
     try {
       const d = await fetchLyrics();
-      if (d && d.lyrics) { lyricsData = d; break; }
+      if (d?.lyrics) { lyricsData = d; break; }
     } catch (err) {
       console.log("Lyrics source failed:", err.message);
     }
@@ -400,11 +426,22 @@ zokou({
     return repondre("❌ Lyrics haikupatikana. Jaribu jina tofauti.");
 
   const { title, author, lyrics, thumbnail, link } = lyricsData;
-  const message = `*🎵 Title:* ${title}\n*👤 Artist:* ${author}\n\n${lyrics.slice(0, 4096)}`;
+
+  // Gawanya lyrics kama ni ndefu sana
+  const maxLen = 3500;
+  const parts = [];
+  let text = lyrics;
+  while (text.length > maxLen) {
+    parts.push(text.slice(0, maxLen));
+    text = text.slice(maxLen);
+  }
+  parts.push(text);
+
+  const caption = `🎵 *${title}*\n👤 *${author}*\n\n${parts[0]}`;
 
   await sock.sendMessage(jid, {
     image: { url: thumbnail },
-    caption: message,
+    caption,
     contextInfo: {
       ...contextBase,
       externalAdReply: {
@@ -417,4 +454,12 @@ zokou({
       },
     },
   }, { quoted: ms });
+
+  // Tuma sehemu zilizobaki kama lyrics ni ndefu
+  for (let i = 1; i < parts.length; i++) {
+    await sock.sendMessage(jid, {
+      text: parts[i],
+      contextInfo: { ...contextBase },
+    }, { quoted: ms });
+  }
 });
