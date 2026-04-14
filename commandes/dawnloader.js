@@ -173,36 +173,7 @@ zokou({
       console.log("Trailer fetch failed:", trailerErr.message);
     }
 
-    // ── STEP 3: Tuma Movie Info + Poster ──
-    const caption = `🎬 *${movie.Title}* (${movie.Year})
-⭐ *IMDb:* ${movie.imdbRating}/10
-🎭 *Genre:* ${movie.Genre}
-🎥 *Director:* ${movie.Director}
-👥 *Actors:* ${movie.Actors}
-⏱️ *Runtime:* ${movie.Runtime}
-🌍 *Country:* ${movie.Country}
-
-📖 *Plot:* ${movie.Plot}
-
-${trailerUrl ? `🎞️ *Trailer:* ${trailerUrl}` : ""}`;
-
-    await sock.sendMessage(jid, {
-      image: { url: movie.Poster !== "N/A" ? movie.Poster : conf.URL },
-      caption,
-      contextInfo: {
-        ...contextBase,
-        externalAdReply: {
-          title: movie.Title,
-          body: `IMDb: ${movie.imdbRating}/10`,
-          thumbnailUrl: movie.Poster !== "N/A" ? movie.Poster : conf.URL,
-          sourceUrl: `https://www.imdb.com/title/${movie.imdbID}`,
-          mediaType: 1,
-          renderLargerThumbnail: true,
-        },
-      },
-    }, { quoted: ms });
-
-    // ── STEP 4: Tuma Trailer Video (kama inapatikana) ──
+    // ── STEP 3: Tuma Trailer Video (kama inapatikana) ──
     if (trailerVideoUrl) {
       await repondre("🎞️ Inapakua trailer... Subiri kidogo!");
       await sock.sendMessage(jid, {
