@@ -76,7 +76,7 @@ const textProEffects = [
 textProEffects.forEach(effect => {
     zokou({ nomCom: effect.nom, categorie: "Logo", reaction: effect.react }, async (dest, zk, commandeOptions) => {
         const { arg, repondre, ms, prefixe } = commandeOptions;
-        if (!arg || arg.length === 0) return repondre(`*Example:* ${prefixe}${effect.nom} Timnasa`);
+        if (!arg || arg.length === 0) return repondre(`*Example:* ${prefixe}${effect.nom} Kate AI`);
 
         try {
             let data = await mumaker.textpro(effect.url, arg.join(' '));
