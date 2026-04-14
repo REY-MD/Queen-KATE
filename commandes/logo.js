@@ -2,7 +2,7 @@ const { zokou } = require("../framework/zokou");
 const mumaker = require("mumaker");
 
 // Global Channel JID Configuration
-const channelJid = "120363413554978773@newsletter";
+const channelJid = "120363295141350550@newsletter";
 const contextInfo = {
     forwardingScore: 999,
     isForwarded: true,
@@ -28,7 +28,7 @@ zokou({ nomCom: "hacker", categorie: "Logo", reaction: "👨🏿‍💻" }, asyn
 // --- DRAGON BALL ---
 zokou({ nomCom: "dragonball", categorie: "Logo", reaction: "🐉" }, async (dest, zk, commandeOptions) => {
     let { arg, repondre, prefixe, ms } = commandeOptions;
-    if (!arg || arg.length === 0) return repondre(`*Example:* ${prefixe}dragonball Timoth`);
+    if (!arg || arg.length === 0) return repondre(`*Example:* ${prefixe}dragonball Kate AI`);
 
     try {
         repondre("*Creating Dragon Ball text...*");
@@ -40,7 +40,7 @@ zokou({ nomCom: "dragonball", categorie: "Logo", reaction: "🐉" }, async (dest
 // --- NARUTO ---
 zokou({ nomCom: "naruto", categorie: "Logo", reaction: "⛩" }, async (dest, zk, commandeOptions) => {
     let { ms, arg, repondre, prefixe } = commandeOptions;
-    if (!arg || arg.length === 0) return repondre(`*Example:* ${prefixe}naruto Timnasa`);
+    if (!arg || arg.length === 0) return repondre(`*Example:* ${prefixe}naruto Kate AI`);
 
     try {
         repondre("*Processing Naruto style...*");
@@ -52,7 +52,7 @@ zokou({ nomCom: "naruto", categorie: "Logo", reaction: "⛩" }, async (dest, zk,
 // --- DIDONG ---
 zokou({ nomCom: "didong", categorie: "Logo", reaction: "📱" }, async (dest, zk, commandeOptions) => {
     let { arg, repondre, prefixe, ms } = commandeOptions;
-    if (!arg || arg.length === 0) return repondre(`*Example:* ${prefixe}didong Timoth`);
+    if (!arg || arg.length === 0) return repondre(`*Example:* ${prefixe}didong Kate AI`);
 
     try {
         repondre("*Processing...*");
@@ -88,7 +88,7 @@ textProEffects.forEach(effect => {
 // --- GOLD LOGO ---
 zokou({ nomCom: "gold", categorie: "Logo", reaction: "🧚🏿‍♀️" }, async (dest, zk, commandeOptions) => {
     let { ms, arg, prefixe, repondre } = commandeOptions;
-    if (!arg || arg.length === 0) return repondre(`${prefixe}gold Timnasa`);
+    if (!arg || arg.length === 0) return repondre(`${prefixe}gold Kate AI`);
 
     try {
         repondre("*Creating gold text...*");
