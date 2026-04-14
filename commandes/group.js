@@ -271,7 +271,7 @@ zokou({
     let _0x25a35f = "‼️‼️KATE AI 𝐁𝐑𝐎𝐀𝐃𝐂𝐀𝐒𝐓️‼️️‼️\n\n❗*message* : " + _0x1360fc + "\n\n️‼️ *Author*: " + _0x271224;
     await _0x4cdb8c.sendMessage(_0x398282, {
       'image': {
-        'url': "https://files.catbox.moe/4tu6s0.jpg"
+        'url': "https://o.uguu.se/alLgUEwf.jpg"
       },
       'caption': '' + _0x25a35f
     });
