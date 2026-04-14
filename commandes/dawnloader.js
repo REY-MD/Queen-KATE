@@ -1,11 +1,6 @@
 const { zokou } = require("../framework/zokou");
 const axios = require("axios");
-const ytSearch = require("yt-search");
 const conf = require("../set");
-
-// ── GiftedTech API Config ──
-const GiftedTechApi = "https://apis.davidcyriltech.my.id";
-const GiftedApiKey = "gifted-md";
 
 const contextBase = {
   forwardingScore: 999,
@@ -32,6 +27,76 @@ const makeRepondre = (sock, jid, ms) => async (text) => {
     },
   }, { quoted: ms });
 };
+
+zokou(
+  {
+    nomCom: "play",
+    aliases: ["music", "song"],
+    categorie: "Media",
+  },
+  async (dest, zk, commandeOptions) => {
+    const { ms, repondre, arg, nomAuteurMessage } = commandeOptions;
+    const repondreFormate = makeRepondre(zk, dest, ms);
+
+    const q = arg.join(" ");
+    if (!q) return repondreFormate("❌ Tafadhali weka jina la wimbo!\n\n📌 Mfano: *play Rema Calm Down*");
+
+    await repondreFormate("🔍 Inatafuta wimbo... Subiri kidogo!");
+
+    try {
+      // ── STEP 1: Search Spotify ──
+      const searchUrl = `https://jerrycoder.oggyapi.workers.dev/spotify?search=${encodeURIComponent(q)}`;
+      const searchRes = await axios.get(searchUrl);
+      const data = searchRes.data;
+
+      if (!data || !data.results || data.results.length === 0) {
+        return repondreFormate("❌ Wimbo haukupatikana! Jaribu tena na jina lingine.");
+      }
+
+      const bestSong = data.results[0];
+      const { title, artist, duration, spotifyUrl, thumbnail } = bestSong;
+
+      await repondreFormate(
+        `🎵 *Wimechagua Wimbo:*\n\n` +
+        `📀 *Jina:* ${title}\n` +
+        `🎤 *Msanii:* ${artist}\n` +
+        `⏱️ *Muda:* ${duration}\n\n` +
+        `⬇️ Inapakua... Subiri!`
+      );
+
+      // ── STEP 2: Download ──
+      const downloadUrl = `https://jerrycoder.oggyapi.workers.dev/dspotify?url=${encodeURIComponent(spotifyUrl)}`;
+      const dlRes = await axios.get(downloadUrl);
+      const dlData = dlRes.data;
+
+      if (!dlData || !dlData.downloadUrl) {
+        return repondreFormate("❌ Imeshindwa kupakua wimbo. Jaribu tena!");
+      }
+
+      // ── STEP 3: Tuma Audio ──
+      await zk.sendMessage(dest, {
+        audio: { url: dlData.downloadUrl },
+        mimetype: "audio/mpeg",
+        ptt: false,
+        fileName: `${title} - ${artist}.mp3`,
+        contextInfo: {
+          ...contextBase,
+          externalAdReply: {
+            title: `🎵 ${title}`,
+            body: `🎤 ${artist} | ⏱️ ${duration}`,
+            thumbnailUrl: thumbnail || conf.URL,
+            mediaType: 1,
+            renderLargerThumbnail: true,
+          },
+        },
+      }, { quoted: ms });
+
+    } catch (err) {
+      console.error("Play Error:", err.message);
+      await repondreFormate("❌ Kuna hitilafu imetokea! Jaribu tena baadaye.\n\n🔧 Error: " + err.message);
+    }
+  }
+);
 
 // ─────────────────────────────────────────
 // 🎬 MOVIE COMMAND
@@ -292,139 +357,4 @@ zokou({
       },
     },
   }, { quoted: ms });
-});
-
-// ─────────────────────────────────────────
-// 🎵 PLAY / AUDIO COMMAND
-// ─────────────────────────────────────────
-zokou({
-  nomCom: "play",
-  aliases: ["song", "ytmp3", "audio", "mp3"],
-  categorie: "Search",
-  reaction: "⬇️",
-}, async (jid, sock, data) => {
-  const { arg, ms } = data;
-  const repondre = makeRepondre(sock, jid, ms);
-
-  if (!arg[0]) return repondre("❌ Taja jina la wimbo.\nMfano: .play Rema Calm Down");
-
-  const query = arg.join(" ");
-
-  try {
-    const results = await ytSearch(query);
-    if (!results || !results.videos.length)
-      return repondre("❌ Wimbo haukupatikana.");
-
-    const video = results.videos[0];
-    const videoUrl = video.url;
-    const [artist, songTitle] = video.title.includes(" - ")
-      ? video.title.split(" - ", 2)
-      : ["Unknown Artist", video.title];
-
-    await sock.sendMessage(jid, { text: "```📥 Inadownload....```" }, { quoted: ms });
-
-    let downloadUrl = null;
-    let thumbnail = video.thumbnail;
-
-    // ── HATUA 1: GiftedTech API (ytmp3) ──
-    try {
-      const res = await axios.get(
-        `${GiftedTechApi}/api/download/ytmp3?apikey=${GiftedApiKey}&url=${encodeURIComponent(videoUrl)}`,
-        { timeout: 20000 }
-      );
-      const d = res.data;
-      const link = d?.result?.download_url || d?.result?.link || d?.link || d?.url;
-      if (link) {
-        downloadUrl = link;
-        thumbnail = d?.result?.thumbnail || d?.thumbnail || thumbnail;
-        console.log("✅ GiftedTech MP3 ikafanikiwa!");
-      }
-    } catch (e) {
-      console.log("❌ GiftedTech MP3 imefail:", e.message);
-    }
-
-    // ── HATUA 2: Backup APIs ──
-    if (!downloadUrl) {
-      const backupApis = [
-        `https://www.dark-yasiya-api.site/download/ytmp3?url=${encodeURIComponent(videoUrl)}`,
-        `https://api.dreaded.site/api/ytdl/mp3?query=${encodeURIComponent(videoUrl)}`,
-      ];
-
-      for (let url of backupApis) {
-        try {
-          const res = await axios.get(url, { timeout: 20000 });
-          const d = res.data;
-          const link = d?.result?.download_url || d?.result?.link || d?.link || d?.url;
-          if (link) {
-            downloadUrl = link;
-            thumbnail = d?.result?.thumbnail || d?.thumbnail || thumbnail;
-            console.log("✅ Backup API ikafanikiwa:", url);
-            break;
-          }
-        } catch (e) {
-          console.log("❌ Backup API imefail:", e.message);
-        }
-      }
-    }
-
-    // ── HATUA 3: Spotify API ──
-    if (!downloadUrl) {
-      console.log("🔄 Inajaribu Spotify...");
-      try {
-        const spotifySearch = await axios.get(
-          `https://jerrycoder.oggyapi.workers.dev/spotify?search=${encodeURIComponent(query)}`,
-          { timeout: 15000 }
-        );
-        const bestSong =
-          spotifySearch.data?.tracks?.[0] ||
-          spotifySearch.data?.data?.[0] ||
-          spotifySearch.data?.[0];
-
-        if (bestSong) {
-          const spotifyUrl =
-            bestSong.spotifyUrl || bestSong.url || bestSong.external_urls?.spotify;
-
-          if (spotifyUrl) {
-            const sd = await axios.get(
-              `https://jerrycoder.oggyapi.workers.dev/dspotify?url=${encodeURIComponent(spotifyUrl)}`,
-              { timeout: 20000 }
-            );
-            const link = sd.data?.download_url || sd.data?.url || sd.data?.link;
-            if (link) {
-              downloadUrl = link;
-              thumbnail = sd.data?.thumbnail || bestSong?.image || thumbnail;
-              console.log("✅ Spotify API ikafanikiwa!");
-            }
-          }
-        }
-      } catch (e) {
-        console.log("❌ Spotify API imefail:", e.message);
-      }
-    }
-
-    // ── HATUA 4: Zote zimefail ──
-    if (!downloadUrl)
-      return repondre("❌ Download imeshindwa. APIs zote zimefail.\nJaribu tena baadaye au tumia jina tofauti.");
-
-    await sock.sendMessage(jid, {
-      audio: { url: downloadUrl },
-      mimetype: "audio/mp4",
-      contextInfo: {
-        ...contextBase,
-        externalAdReply: {
-          title: "♻️ QUEEN-KATE-AI AUDIO DOWNLOADER ♻️",
-          body: `🎵 ${artist} - ${songTitle}`,
-          mediaType: 1,
-          thumbnailUrl: thumbnail,
-          sourceUrl: videoUrl,
-          renderLargerThumbnail: false,
-          showAdAttribution: false,
-        },
-      },
-    }, { quoted: ms });
-
-  } catch (err) {
-    console.error("Download Error:", err);
-    return repondre("❌ Download imeshindwa: " + (err.message || err));
-  }
 });
