@@ -116,6 +116,7 @@ zokou({
   await repondre("🔍 Inatafuta movie...");
 
   try {
+    // ── STEP 1: OMDB - Movie Info ──
     const apiKey = conf.OMDB_KEY || "38f19ae1";
     const searchRes = await axios.get(
       `http://www.omdbapi.com/?s=${encodeURIComponent(query)}&apikey=${apiKey}`,
@@ -135,6 +136,42 @@ zokou({
     if (movie.Response === "False")
       return repondre(`❌ Error: ${movie.Error}`);
 
+    // ── STEP 2: TMDB - Pata Trailer ──
+    const tmdbKey = conf.TMDB_KEY || "8265bd1679663a7ea12ac168da84d2e8";
+    let trailerUrl = null;
+    let trailerVideoUrl = null;
+
+    try {
+      // Tafuta movie kwenye TMDB kutumia IMDB ID
+      const tmdbRes = await axios.get(
+        `https://api.themoviedb.org/3/find/${movieID}?api_key=${tmdbKey}&external_source=imdb_id`,
+        { timeout: 10000 }
+      );
+
+      const tmdbMovie = tmdbRes.data.movie_results[0];
+
+      if (tmdbMovie) {
+        // Pata trailer videos
+        const videosRes = await axios.get(
+          `https://api.themoviedb.org/3/movie/${tmdbMovie.id}/videos?api_key=${tmdbKey}`,
+          { timeout: 10000 }
+        );
+
+        const videos = videosRes.data.results;
+        const trailer = videos.find(v => v.type === "Trailer" && v.site === "YouTube")
+                     || videos[0];
+
+        if (trailer) {
+          trailerUrl = `https://www.youtube.com/watch?v=${trailer.key}`;
+          // Tumia yt-dlp-web au invidious kupata direct video link
+          trailerVideoUrl = `https://inv.tux.pizza/latest_version?id=${trailer.key}&itag=18`;
+        }
+      }
+    } catch (trailerErr) {
+      console.log("Trailer fetch failed:", trailerErr.message);
+    }
+
+    // ── STEP 3: Tuma Movie Info + Poster ──
     const caption = `🎬 *${movie.Title}* (${movie.Year})
 ⭐ *IMDb:* ${movie.imdbRating}/10
 🎭 *Genre:* ${movie.Genre}
@@ -143,7 +180,9 @@ zokou({
 ⏱️ *Runtime:* ${movie.Runtime}
 🌍 *Country:* ${movie.Country}
 
-📖 *Plot:* ${movie.Plot}`;
+📖 *Plot:* ${movie.Plot}
+
+${trailerUrl ? `🎞️ *Trailer:* ${trailerUrl}` : ""}`;
 
     await sock.sendMessage(jid, {
       image: { url: movie.Poster !== "N/A" ? movie.Poster : conf.URL },
@@ -160,6 +199,27 @@ zokou({
         },
       },
     }, { quoted: ms });
+
+    // ── STEP 4: Tuma Trailer Video (kama inapatikana) ──
+    if (trailerVideoUrl) {
+      await repondre("🎞️ Inapakua trailer... Subiri kidogo!");
+      await sock.sendMessage(jid, {
+        video: { url: trailerVideoUrl },
+        caption: `🎬 *${movie.Title}* - Official Trailer`,
+        mimetype: "video/mp4",
+        contextInfo: {
+          ...contextBase,
+          externalAdReply: {
+            title: `🎬 ${movie.Title} - Trailer`,
+            body: `IMDb: ${movie.imdbRating}/10`,
+            thumbnailUrl: movie.Poster !== "N/A" ? movie.Poster : conf.URL,
+            sourceUrl: trailerUrl,
+            mediaType: 1,
+            renderLargerThumbnail: true,
+          },
+        },
+      }, { quoted: ms });
+    }
 
   } catch (err) {
     console.error("Movie error:", err);
