@@ -35,7 +35,7 @@ zokou(
     categorie: "Media",
   },
   async (dest, zk, commandeOptions) => {
-    const { ms, repondre, arg, nomAuteurMessage } = commandeOptions;
+    const { ms, arg } = commandeOptions;
     const repondreFormate = makeRepondre(zk, dest, ms);
 
     const q = arg.join(" ");
@@ -44,47 +44,49 @@ zokou(
     await repondreFormate("🔍 Inatafuta wimbo... Subiri kidogo!");
 
     try {
-      // ── STEP 1: Search Spotify ──
+      // ── STEP 1: Search ──
       const searchUrl = `https://jerrycoder.oggyapi.workers.dev/spotify?search=${encodeURIComponent(q)}`;
-      const searchRes = await axios.get(searchUrl);
-      const data = searchRes.data;
+      const searchRes = await axios.get(searchUrl, { timeout: 20000 });
 
-      if (!data || !data.results || data.results.length === 0) {
+      if (!searchRes.data?.tracks || searchRes.data.tracks.length === 0) {
         return repondreFormate("❌ Wimbo haukupatikana! Jaribu tena na jina lingine.");
       }
 
-      const bestSong = data.results[0];
-      const { title, artist, duration, spotifyUrl, thumbnail } = bestSong;
+      const bestSong = searchRes.data.tracks[0];
+      const { trackName, artist, spotifyUrl, thumbnail } = bestSong;
 
       await repondreFormate(
         `🎵 *Wimechagua Wimbo:*\n\n` +
-        `📀 *Jina:* ${title}\n` +
-        `🎤 *Msanii:* ${artist}\n` +
-        `⏱️ *Muda:* ${duration}\n\n` +
+        `📀 *Jina:* ${trackName}\n` +
+        `🎤 *Msanii:* ${artist}\n\n` +
         `⬇️ Inapakua... Subiri!`
       );
 
       // ── STEP 2: Download ──
-      const downloadUrl = `https://jerrycoder.oggyapi.workers.dev/dspotify?url=${encodeURIComponent(spotifyUrl)}`;
-      const dlRes = await axios.get(downloadUrl);
-      const dlData = dlRes.data;
+      const dlUrl = `https://jerrycoder.oggyapi.workers.dev/dspotify?url=${encodeURIComponent(spotifyUrl)}`;
+      const dlRes = await axios.get(dlUrl, { timeout: 30000 });
 
-      if (!dlData || !dlData.downloadUrl) {
+      if (!dlRes.data?.status || !dlRes.data?.download_link) {
         return repondreFormate("❌ Imeshindwa kupakua wimbo. Jaribu tena!");
       }
 
+      const dlData = dlRes.data;
+      const title = dlData.title || trackName;
+      const artistName = dlData.artist || artist;
+      const thumb = dlData.thumbnail || thumbnail;
+
       // ── STEP 3: Tuma Audio ──
       await zk.sendMessage(dest, {
-        audio: { url: dlData.downloadUrl },
+        audio: { url: dlData.download_link },
         mimetype: "audio/mpeg",
-        ptt: false,
-        fileName: `${title} - ${artist}.mp3`,
+        fileName: `${title}.mp3`,
         contextInfo: {
           ...contextBase,
           externalAdReply: {
             title: `🎵 ${title}`,
-            body: `🎤 ${artist} | ⏱️ ${duration}`,
-            thumbnailUrl: thumbnail || conf.URL,
+            body: `🎤 ${artistName}`,
+            thumbnailUrl: thumb || conf.URL,
+            sourceUrl: spotifyUrl,
             mediaType: 1,
             renderLargerThumbnail: true,
           },
@@ -93,7 +95,7 @@ zokou(
 
     } catch (err) {
       console.error("Play Error:", err.message);
-      await repondreFormate("❌ Kuna hitilafu imetokea! Jaribu tena baadaye.\n\n🔧 Error: " + err.message);
+      await repondreFormate("❌ Kuna hitilafu imetokea! Jaribu tena.\n\n🔧 Error: " + err.message);
     }
   }
 );
