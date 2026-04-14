@@ -23,7 +23,7 @@ zokou(
               text: 'messageText',
             }),
             footer: proto.Message.InteractiveMessage.Footer.create({
-              text: 'Neoverse_Md_bot',
+              text: 'Kate_Ai_bot',
             }),
             header: proto.Message.InteractiveMessage.Header.create({
               ...(await prepareWAMessageMedia({
