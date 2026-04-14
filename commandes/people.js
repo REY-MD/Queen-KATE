@@ -67,7 +67,7 @@ zokou({
       contextInfo: {
         externalAdReply: {
           title: `KNOW MORE ABOUT ${name}`,
-          body: "Timnasa International Data",
+          body: "Kate AI International Data",
           sourceUrl: "https://github.com/timnasax",
           mediaType: 1
         }
