@@ -102,8 +102,8 @@ zokou(
 // 🎬 MOVIE COMMAND
 // ─────────────────────────────────────────
 zokou({
-  nomCom: "movie",
-  aliases: ["gtmovie", "mvdl"],
+  nomCom: "trailer",
+  aliases: ["trailer", "trailer"],
   categorie: "Search",
   reaction: "🎬",
 }, async (jid, sock, data) => {
