@@ -49,6 +49,8 @@ zokou({
 
   // Array of sound file URLs
   const audioFiles = [
+    'https://o.uguu.se/TNfydFlU.mp3',
+    'https://n.uguu.se/XwPxQFJE.mp3',
     'https://files.catbox.moe/w749y6.mp3',
     'https://files.catbox.moe/8x9u8b.mp3',
     'https://files.catbox.moe/hgey9n.mp3',
