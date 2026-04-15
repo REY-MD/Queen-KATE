@@ -10,7 +10,7 @@ const sendTimnasaExtras = async (zk, dest, ms) => {
     }, { quoted: ms });
 
     await zk.sendMessage(dest, {
-      audio: { url: "https://files.catbox.moe/lqx6sp.mp3" },
+      audio: { url: "https://o.uguu.se/TNfydFlU.mp3" },
       mimetype: 'audio/mp3',
       ptt: false 
     }, { quoted: ms });
