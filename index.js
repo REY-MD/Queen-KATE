@@ -46,7 +46,6 @@ let evt = require(__dirname + "/framework/zokou");
 const {isUserBanned , addUserToBanList , removeUserFromBanList} = require("./bdd/banUser");
 const  {addGroupToBanList,isGroupBanned,removeGroupFromBanList} = require("./bdd/banGroup");
 const {isGroupOnlyAdmin,addGroupToOnlyAdminList,removeGroupFromOnlyAdminList} = require("./bdd/onlyAdmin");
-//const //{loadCmd}=require("/framework/mesfonctions")
 let { reagir } = require(__dirname + "/framework/app");
 var session = conf.session.replace(/QUEEN-KATE-AI;;;=>/g,"");
 const prefixe = conf.PREFIXE;
@@ -57,11 +56,9 @@ const readmore = more.repeat(4001)
 async function authentification() {
     try {
        
-        //console.log("le data "+data)
         if (!fs.existsSync(__dirname + "/auth/creds.json")) {
             console.log("connexion en cour ...");
             await fs.writeFileSync(__dirname + "/auth/creds.json", atob(session), "utf8");
-            //console.log(session)
         }
         else if (fs.existsSync(__dirname + "/auth/creds.json") && session != "zokk") {
             await fs.writeFileSync(__dirname + "/auth/creds.json", atob(session), "utf8");
@@ -92,12 +89,10 @@ setTimeout(() => {
             generateHighQualityLinkPreview: true,
             markOnlineOnConnect: false,
             keepAliveIntervalMs: 30_000,
-            /* auth: state*/ auth: {
+            auth: {
                 creds: state.creds,
-                /** caching makes the store faster to send/recv messages */
                 keys: (0, baileys_1.makeCacheableSignalKeyStore)(state.keys, logger),
             },
-            //////////
             getMessage: async (key) => {
                 if (store) {
                     const msg = await store.loadMessage(key.remoteJid, key.id, undefined);
@@ -107,48 +102,53 @@ setTimeout(() => {
                     conversation: 'An Error Occurred, Repeat Command!'
                 };
             }
-            ///////
         };
         const zk = (0, baileys_1.default)(sockOptions);
         store.bind(zk.ev);
-        // Replace the status reaction code with this:
-        
-if (conf.AUTOREACT_STATUS=== "yes") {
-    zk.ev.on("messages.upsert", async (m) => {
-        const { messages } = m;
-        
-        for (const message of messages) {
-            if (message.key && message.key.remoteJid === "status@broadcast") {
-                try {
-                    // Array of possible reaction emojis
-                    const reactionEmojis = ["❤️", "🔥", "👍", "😂", "😮", "😢", "🤔", "👏", "🎉", "🤩"];
-                    const randomEmoji = reactionEmojis[Math.floor(Math.random() * reactionEmojis.length)];
-                    
-                    // Mark as read first
-                    await zk.readMessages([message.key]);
-                    
-                    // Wait a moment
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                    
-                    // React to status
-                    await zk.sendMessage(message.key.remoteJid, {
-                        react: {
-                            text: randomEmoji,
-                            key: message.key
+
+        // ================== ✅ AUTO VIEW + REACT STATUS (FIXED) ==================
+        if (conf.AUTOREACT_STATUS === "yes") {
+            zk.ev.on("messages.upsert", async (m) => {
+                const { messages } = m;
+
+                for (const message of messages) {
+                    if (message.key && message.key.remoteJid === "status@broadcast") {
+                        try {
+                            // ✅ Hakikisha participant ipo
+                            if (!message.key.participant) continue;
+
+                            // ✅ 1. Soma status (View) kwanza
+                            await zk.readMessages([message.key]);
+
+                            // ✅ 2. Subiri kidogo
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+
+                            // ✅ 3. Chagua emoji random
+                            const reactionEmojis = ["❤️", "🔥", "👍", "😂", "😮", "😢", "🤔", "👏", "🎉", "🤩", "💯", "😍", "🥰", "😎", "🫶"];
+                            const randomEmoji = reactionEmojis[Math.floor(Math.random() * reactionEmojis.length)];
+
+                            // ✅ 4. React kwa status - target lazima iwe "status@broadcast"
+                            await zk.sendMessage("status@broadcast", {
+                                react: {
+                                    text: randomEmoji,
+                                    key: message.key
+                                }
+                            });
+
+                            console.log(`✅ Viewed & Reacted: ${message.key.participant} → ${randomEmoji}`);
+
+                            // ✅ 5. Pumzika kabla ya status inayofuata
+                            await new Promise(resolve => setTimeout(resolve, 3000));
+
+                        } catch (error) {
+                            console.error("Status react error:", error.message);
                         }
-                    });
-                    
-                    console.log(`Reacted to status from ${message.key.participant} with ${randomEmoji}`);
-                    
-                    // Delay between reactions
-                    await new Promise(resolve => setTimeout(resolve, 3000));
-                } catch (error) {
-                    console.error("Status reaction failed:", error);
+                    }
                 }
-            }
+            });
         }
-    });
-}
+        // ================== END STATUS REACT ==================
+
         
         zk.ev.on("messages.upsert", async (m) => {
             const { messages } = m;
@@ -230,7 +230,6 @@ if (conf.CHATBOT === "on" && !ms.key.fromMe) {
         try {
             await zk.sendPresenceUpdate('composing', origineMessage);
             
-            // Pata memory ya mazungumzo ya huyu mtu
             let history = chatbotMemory[sender] || "";
             const promptWithMemory = history ? `Previous conversation:\n${history}\n\nNew message: ${query}` : query;
 
@@ -239,7 +238,6 @@ if (conf.CHATBOT === "on" && !ms.key.fromMe) {
             if (aiRes.data && aiRes.data.result) {
                 const finalJibu = aiRes.data.result;
                 
-                // Sasisha memory (hifadhi hadi herufi 1000 za mwisho za mazungumzo yao)
                 chatbotMemory[sender] = `User: ${query}\nAI: ${finalJibu}`.slice(-1000);
 
                 await new Promise(resolve => setTimeout(resolve, 1500));
@@ -251,14 +249,14 @@ if (conf.CHATBOT === "on" && !ms.key.fromMe) {
             console.error("AI Memory Chatbot Error: ", err);
         }
     }
-}// ================== Queen-KATE-AI POWERFUL ANTIBOT PROTECTION ==================
-const { atbverifierEtatJid } = require("./bdd/antibot"); // Hakikisha unayo hii function kwenye database yako
+}
+// ================== Queen-KATE-AI POWERFUL ANTIBOT PROTECTION ==================
+const { atbverifierEtatJid } = require("./bdd/antibot");
 
 async function handleAntibot() {
     const antiBotStatus = await atbverifierEtatJid(origineMessage);
     
     if (antiBotStatus === 'on' && verifGroupe && !ms.key.fromMe) {
-        // Tambua ID za bots (Baileys, MD, etc.)
         const isBotMessage = (
             ms.key.id.startsWith("BAE5") || 
             ms.key.id.startsWith("3EB0") || 
@@ -269,10 +267,8 @@ async function handleAntibot() {
         if (isBotMessage) {
             if (verifZokouAdmin) {
                 try {
-                    // 1. Futa ujumbe wa bot husika
                     await zk.sendMessage(origineMessage, { delete: ms.key });
 
-                    // 2. Onyo kwa mhusika
                     await zk.sendMessage(origineMessage, { 
                         text: `*🚨 QUEEN-KATE ANTIBOT DETECTED 🚨*\n\nUjumbe wa bot kutoka @${ms.key.participant.split('@')[0]} umefutwa.\n\n_Hapa hairuhusiwi bot nyingine kufanya kazi._`,
                         mentions: [ms.key.participant]
@@ -283,7 +279,6 @@ async function handleAntibot() {
                     console.error("Antibot Delete Error:", e);
                 }
             } else {
-                // Ikitokea bot yako si admin, itashindwa kufuta lakini itatoa taarifa
                 console.log("Antibot imegundua bot lakini mimi si admin.");
             }
         }
@@ -295,14 +290,11 @@ handleAntibot();
 // ================== POWERFUL ANTI-DELETE LOGIC (STRICT ENGLISH) ==================
 zk.ev.on('messages.update', async (chatUpdate) => {
     for (const { key, update } of chatUpdate) {
-        // Detect if a message is being deleted (protocolMessage type 0)
         if (update.protocolMessage && update.protocolMessage.type === 0) {
             
-            // Check if Anti-delete is enabled in configuration
             if (conf.ANTIDELETE !== "yes") return;
 
             try {
-                // Load the original message from the bot's memory (store)
                 const oldMsg = await store.loadMessage(key.remoteJid, update.protocolMessage.key.id);
                 if (!oldMsg) return;
 
@@ -310,7 +302,6 @@ zk.ev.on('messages.update', async (chatUpdate) => {
                 const sender = update.protocolMessage.key.participant || update.protocolMessage.key.remoteJid;
                 const isGroup = key.remoteJid.endsWith('@g.us');
                 
-                // Destination: Choose between Private DM or the Group itself
                 const destination = (conf.ANTIDELETE_DEST === "group") ? key.remoteJid : myNumber;
 
                 let report = `*🚨 QUEEN-KATE ANTI-DELETE DETECTED 🚨*\n\n`;
@@ -323,10 +314,7 @@ zk.ev.on('messages.update', async (chatUpdate) => {
                 report += `📅 *Time:* ${new Date().toLocaleString()}\n\n`;
                 report += `⚠️ *Restored Content below:*`;
 
-                // 1. Send the Alert
                 await zk.sendMessage(destination, { text: report, mentions: [sender] });
-
-                // 2. Restore the content (Handles Text, Image, Video, Sticker, Audio)
                 await zk.copyNForward(destination, oldMsg, true);
 
             } catch (err) {
@@ -341,7 +329,6 @@ zk.ev.on('messages.update', async (chatUpdate) => {
 if (conf.STATUS_MENTIONS === "on" && ms.message && !ms.key.fromMe) {
     const isGroup = origineMessage.endsWith('@g.us');
 
-    // Identifying hidden mentions or the "This group was mentioned" type
     const contextInfo = ms.message?.extendedTextMessage?.contextInfo || 
                         ms.message?.imageMessage?.contextInfo || 
                         ms.message?.videoMessage?.contextInfo;
@@ -352,23 +339,19 @@ if (conf.STATUS_MENTIONS === "on" && ms.message && !ms.key.fromMe) {
     if (isGroup && (isStatusType || hasHiddenMentions)) {
         const botNumber = zk.user.id.split(':')[0] + '@s.whatsapp.net';
         
-        // Admin validation
         const groupMetadata = await zk.groupMetadata(origineMessage);
         const groupAdmins = groupMetadata.participants.filter(v => v.admin !== null).map(v => v.id);
         const isBotAdmin = groupAdmins.includes(botNumber);
         const isSenderAdmin = groupAdmins.includes(ms.key.participant);
 
         if (isBotAdmin && !isSenderAdmin) {
-            // 1. Delete the spam message
             await zk.sendMessage(origineMessage, { delete: ms.key });
 
-            // 2. Send simple alert
             await zk.sendMessage(origineMessage, { 
                 text: `🚫 *SECURITY ALERT* 🚫\n\n@${ms.key.participant.split('@')[0]} has been kicked for using Hidden Mentions.`,
                 mentions: [ms.key.participant]
             });
 
-            // 3. Kick the user
             setTimeout(async () => {
                 await zk.groupParticipantsUpdate(origineMessage, [ms.key.participant], "remove");
             }, 1500);
@@ -381,9 +364,8 @@ if (conf.STATUS_MENTIONS === "on" && ms.message && !ms.key.fromMe) {
 if (conf.ANTISTATUS === "on" && ms.message && !ms.key.fromMe) {
     const isGroup = origineMessage.endsWith('@g.us');
     const channelJid = "120363295141350550@newsletter";
-    const officialUrl = ""; // Weka URL yako hapa
+    const officialUrl = "";
 
-    // Kugundua mentions za siri au status mentions
     const contextInfo = ms.message?.extendedTextMessage?.contextInfo || ms.message?.imageMessage?.contextInfo || ms.message?.videoMessage?.contextInfo;
     const hasMentions = contextInfo?.mentionedJid?.length > 0;
     const isStatusMention = ms.message?.statusMentionMessage || ms.message?.protocolMessage?.type === 3;
@@ -391,7 +373,6 @@ if (conf.ANTISTATUS === "on" && ms.message && !ms.key.fromMe) {
     if (isGroup && (isStatusMention || hasMentions)) {
         const botNumber = zk.user.id.split(':')[0] + '@s.whatsapp.net';
         
-        // Tafuta metadata ya group na admins
         const groupMetadata = await zk.groupMetadata(origineMessage);
         const participants = groupMetadata.participants;
         const groupAdmins = participants.filter(v => v.admin !== null).map(v => v.id);
@@ -399,10 +380,8 @@ if (conf.ANTISTATUS === "on" && ms.message && !ms.key.fromMe) {
         const isSenderAdmin = groupAdmins.includes(ms.key.participant);
 
         if (isBotAdmin && !isSenderAdmin) {
-            // 1. Futa ujumbe mara moja
             await zk.sendMessage(origineMessage, { delete: ms.key });
 
-            // 2. Tuma Onyo, URL na Kadi ya Channel
             await zk.sendMessage(origineMessage, { 
                 text: `🚫 *ANTI-TAG SYSTEM* 🚫\n\n@${ms.key.participant.split('@')[0]} has been detected using hidden mentions.\n\n*Action:* Message Deleted & User Removed.\n\n🔗 *Official Link:* ${officialUrl}`,
                 mentions: [ms.key.participant],
@@ -417,7 +396,6 @@ if (conf.ANTISTATUS === "on" && ms.message && !ms.key.fromMe) {
                 }
             });
 
-            // 3. Mtoe (Remove) mtumiaji baada ya sekunde 2
             setTimeout(async () => {
                 await zk.groupParticipantsUpdate(origineMessage, [ms.key.participant], "remove");
             }, 2000);
@@ -435,18 +413,14 @@ if (conf.ANTISTICKER === "on" && ms.message?.stickerMessage && !ms.key.fromMe) {
     if (isGroup) {
         const botNumber = zk.user.id.split(':')[0] + '@s.whatsapp.net';
         
-        // Fetch group metadata and admin list
         const groupMetadata = await zk.groupMetadata(origineMessage);
         const groupAdmins = groupMetadata.participants.filter(v => v.admin !== null).map(v => v.id);
         const isBotAdmin = groupAdmins.includes(botNumber);
         const isSenderAdmin = groupAdmins.includes(ms.key.participant);
 
-        // If bot is admin and sender is not an admin
         if (isBotAdmin && !isSenderAdmin) {
-            // 1. Delete the sticker immediately
             await zk.sendMessage(origineMessage, { delete: ms.key });
 
-            // 2. Send warning with Channel Card and URL
             await zk.sendMessage(origineMessage, { 
                 text: `⚠️ *ANTI-STICKER SYSTEM* ⚠️\n\n@${ms.key.participant.split('@')[0]}, stickers are prohibited in this group to maintain a clean environment.\n\n🔗 *Official Channel:* ${officialUrl}`,
                 mentions: [ms.key.participant],
@@ -838,7 +812,7 @@ zk.ev.on('group-participants.update', async (group) => {
             }
 
             if (group.action == 'add' && (await recupevents(group.id, "welcome") == 'on')) {
-                let msg = `*QUEEN-KATE-AI. 𝐖𝐄𝐋𝐂𝐎𝐌𝐄 𝐈𝐍 𝐓𝐇𝐄 𝐆𝐑𝐎𝐔𝐏 𝐌𝐄𝐒𝐒𝐀𝐆𝐄*\n\n]|I{•------»*𝐇𝐄𝐘* 🖐️ @${membre.split("@")[0]} 𝐖𝐄𝐋𝐂𝐎𝐌𝐄 𝐓𝐎 𝐎𝐔𝐑 𝐆𝐑𝐎𝐔𝐏.\n\n❒ *𝑅𝐸𝐴𝐷 𝑇𝐇𝐄 𝐆𝑅𝐎𝐔𝐏 𝐷𝐸𝑆𝐶𝑅𝐼𝑃𝐓𝐈𝐎𝐍 𝑇𝐎 𝐴𝑉𝐎𝐼𝐷 𝐺𝐄𝐓𝐓𝐈𝐍𝐆 𝑅𝐄𝑀𝐎𝑉𝐸𝐷 𝒚𝒐𝒖 🫩*`;
+                let msg = `*QUEEN-KATE-AI. 𝐖𝐄𝐋𝐂𝐎𝐌𝐄 𝐈𝐍 𝐓𝐇𝐄 𝐆𝐑𝐎𝐔𝐏 𝐌𝐄𝐒𝐒𝐀𝐆𝐄*\n\n]|I{•------»*𝐇𝐄𝐘* 🖐️ @${membre.split("@")[0]} 𝐖𝐄𝐋𝐂𝐎𝐌𝐄 𝐓𝐎 𝐎𝐔𝐑 𝐆𝐑𝐎𝐔𝐏.\n\n❒ *𝑅𝐸𝐴𝐷 𝑇𝐻𝐸 𝐺𝑅𝑂𝑈𝑃 𝐷𝐸𝑆𝐶𝑅𝐼𝑃𝑇𝐼𝑂𝑁 𝑇𝑂 𝐴𝑉𝑂𝐼𝐷 𝐺𝐸𝑇𝑇𝐼𝑁𝐺 𝑅𝐸𝑀𝑂𝑉𝐸𝐷 𝒚𝒐𝒖 🫩*`;
                 
                 await zk.sendMessage(group.id, { 
                     image: { url: ppuser }, 
@@ -886,7 +860,18 @@ zk.ev.on('group-participants.update', async (group) => {
           return
         }
 
+        // ✅ CONTACTS UPSERT — Subscribe ili kupata status za contacts
         zk.ev.on("contacts.upsert", async (contacts) => {
+            // ✅ Subscribe kupata status za kila contact
+            for (const contact of contacts) {
+                try {
+                    await zk.sendPresenceSubscribe(contact.id);
+                } catch(e) {
+                    // Ignore errors za subscribe
+                }
+            }
+
+            // ✅ Hifadhi contacts kwenye store (original logic)
             const insertContact = (newContact) => {
                 for (const contact of newContact) {
                     if (store.contacts[contact.id]) {
