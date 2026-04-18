@@ -108,13 +108,12 @@ zokou(
     const query = arg.join(" ");
 
     try {
-      // ── STEP 1: Tuma ujumbe wa kusubiri ──
-      await repondre("🔍 Inatafuta movie, subiri kidogo...");
+      await repondre("🔍 Inatafuta trailer, subiri...");
 
-      // ── STEP 2: OMDB - Movie Info ──
-      const apiKey = conf.OMDB_KEY || "38f19ae1";
+      // ── STEP 1: OMDB - Movie Info ──
+      const omdbKey = conf.OMDB_KEY || "38f19ae1";
       const searchRes = await axios.get(
-        `http://www.omdbapi.com/?s=${encodeURIComponent(query)}&apikey=${apiKey}`,
+        `http://www.omdbapi.com/?s=${encodeURIComponent(query)}&apikey=${omdbKey}`,
         { timeout: 10000 }
       );
 
@@ -123,7 +122,7 @@ zokou(
 
       const movieID = searchRes.data.Search[0].imdbID;
       const detailsRes = await axios.get(
-        `http://www.omdbapi.com/?i=${movieID}&apikey=${apiKey}`,
+        `http://www.omdbapi.com/?i=${movieID}&apikey=${omdbKey}`,
         { timeout: 10000 }
       );
       const movie = detailsRes.data;
@@ -131,96 +130,77 @@ zokou(
       if (movie.Response === "False")
         return repondre(`❌ Error: ${movie.Error}`);
 
-      // ── STEP 3: Tafuta baiscope.lk URL ya movie ──
-      const searchQuery = `${movie.Title} ${movie.Year}`;
-      const baiscopeSearch = await axios.get(
-        `https://www.baiscope.lk/?s=${encodeURIComponent(searchQuery)}`,
-        { timeout: 15000, headers: { "User-Agent": "Mozilla/5.0" } }
+      // ── STEP 2: TMDB - Pata YouTube Trailer Key ──
+      const tmdbKey = conf.TMDB_KEY || "8265bd1679663a7ea12ac168da84d2e8";
+      const tmdbRes = await axios.get(
+        `https://api.themoviedb.org/3/find/${movieID}?api_key=${tmdbKey}&external_source=imdb_id`,
+        { timeout: 10000 }
       );
 
-      // Toa URL ya kwanza kutoka search results
-      const baiscopeHtml = baiscopeSearch.data;
-      const urlMatch = baiscopeHtml.match(
-        /https:\/\/www\.baiscope\.lk\/[a-z0-9\-]+\//
+      const tmdbMovie = tmdbRes.data.movie_results[0];
+      if (!tmdbMovie) return repondre("❌ Movie haikupatikana TMDB.");
+
+      const videosRes = await axios.get(
+        `https://api.themoviedb.org/3/movie/${tmdbMovie.id}/videos?api_key=${tmdbKey}`,
+        { timeout: 10000 }
       );
 
-      if (!urlMatch) return repondre(`❌ Movie hii haikupatikana kwenye database.\nJaribu: *.trailer ${movie.Title}*`);
+      const trailer =
+        videosRes.data.results.find(v => v.type === "Trailer" && v.site === "YouTube") ||
+        videosRes.data.results.find(v => v.type === "Teaser" && v.site === "YouTube");
 
-      const baiscopeUrl = urlMatch[0];
-      await repondre("📥 Inapakua, tafadhali subiri...");
+      if (!trailer) return repondre("❌ Hakuna trailer YouTube kwa movie hii.");
 
-      // ── STEP 4: Srihub API - Pata Download Link ──
-      const sriApiKey = conf.SRIHUB_KEY || "dew_Fcd7IDbzuS1UxCSId47VYYPvCcbTNhAKX3VvvDM8";
-      const sriRes = await axios.get(
-        `https://appi.srihub.store/movie/baiscopedl?url=${encodeURIComponent(baiscopeUrl)}&apikey=${sriApiKey}`,
+      const ytUrl = `https://www.youtube.com/watch?v=${trailer.key}`;
+
+      await repondre("📥 Inapakua trailer...");
+
+      // ── STEP 3: SilvaTech API - Download ──
+      const apiRes = await axios.get(
+        `https://api.silvatech.co.ke/download/ytmp4?url=${encodeURIComponent(ytUrl)}`,
         { timeout: 30000 }
       );
 
-      if (!sriRes.data?.success || !sriRes.data?.result?.downloadUrl)
-        return repondre("❌ Imeshindwa kupata download link. Jaribu tena baadaye!");
+      if (!apiRes.data?.status || !apiRes.data?.result?.download_url)
+        return repondre("❌ Download imeshindwa. Jaribu tena baadaye.");
 
-      const { downloadUrl, thumbnail } = sriRes.data.result;
+      const result = apiRes.data.result;
 
-      // ── STEP 5: TMDB - Pata YouTube Trailer Key (kwa link tu) ──
-      let ytUrl = null;
-      try {
-        const tmdbKey = conf.TMDB_KEY || "8265bd1679663a7ea12ac168da84d2e8";
-        const tmdbRes = await axios.get(
-          `https://api.themoviedb.org/3/find/${movieID}?api_key=${tmdbKey}&external_source=imdb_id`,
-          { timeout: 10000 }
-        );
-        const tmdbMovie = tmdbRes.data.movie_results[0];
-        if (tmdbMovie) {
-          const videosRes = await axios.get(
-            `https://api.themoviedb.org/3/movie/${tmdbMovie.id}/videos?api_key=${tmdbKey}`,
-            { timeout: 10000 }
-          );
-          const trailer =
-            videosRes.data.results.find(v => v.type === "Trailer" && v.site === "YouTube") ||
-            videosRes.data.results.find(v => v.type === "Teaser" && v.site === "YouTube");
-          if (trailer) ytUrl = `https://www.youtube.com/watch?v=${trailer.key}`;
-        }
-      } catch (_) {}
-
-      // ── STEP 6: Kata plot ikiwa ni ndefu ──
       const plot =
         movie.Plot?.length > 200 ? movie.Plot.slice(0, 197) + "..." : movie.Plot;
 
-      // ── STEP 7: Tuma Video ──
-      await sock.sendMessage(
-        jid,
-        {
-          video: { url: downloadUrl },
-          caption:
-            `🎬 *${movie.Title}* (${movie.Year})\n\n` +
-            `⭐ IMDb: *${movie.imdbRating}/10*\n` +
-            `🎭 Genre: ${movie.Genre}\n` +
-            `🌍 Country: ${movie.Country}\n` +
-            `⏱️ Runtime: ${movie.Runtime}\n` +
-            `📝 ${plot}` +
-            (ytUrl ? `\n\n🔗 Trailer: ${ytUrl}` : ""),
-          mimetype: "video/mp4",
-          contextInfo: {
-            ...contextBase,
-            externalAdReply: {
-              title: `🎬 ${movie.Title} - ${movie.Year}`,
-              body: `⭐ IMDb: ${movie.imdbRating}/10 | ${movie.Genre}`,
-              thumbnailUrl: thumbnail || (movie.Poster !== "N/A" ? movie.Poster : conf.URL),
-              sourceUrl: ytUrl || baiscopeUrl,
-              mediaType: 1,
-              renderLargerThumbnail: true,
-            },
+      // ── STEP 4: Tuma Trailer ──
+      await sock.sendMessage(jid, {
+        video: { url: result.download_url },
+        caption:
+          `🎬 *${movie.Title}* (${movie.Year})\n\n` +
+          `⭐ IMDb: *${movie.imdbRating}/10*\n` +
+          `🎭 Genre: ${movie.Genre}\n` +
+          `🌍 Country: ${movie.Country}\n` +
+          `⏱️ Runtime: ${movie.Runtime}\n` +
+          `📝 ${plot}\n\n` +
+          `🔗 ${ytUrl}`,
+        mimetype: "video/mp4",
+        contextInfo: {
+          ...contextBase,
+          externalAdReply: {
+            title: `🎬 ${movie.Title} - Official Trailer`,
+            body: `⭐ IMDb: ${movie.imdbRating}/10 | ${movie.Year}`,
+            thumbnailUrl: movie.Poster !== "N/A" ? movie.Poster : conf.URL,
+            sourceUrl: ytUrl,
+            mediaType: 1,
+            renderLargerThumbnail: true,
           },
         },
-        { quoted: ms }
-      );
+      }, { quoted: ms });
+
     } catch (err) {
       console.error("Trailer error:", err.message);
-      return repondre("❌ Hitilafu imetokea. Jaribu tena.");
+      return repondre("❌ Hitilafu imetokea: " + err.message);
     }
   }
 );
-
+        
 // ─────────────────────────────────────────
 // 🎥 VIDEO COMMAND
 // ─────────────────────────────────────────
