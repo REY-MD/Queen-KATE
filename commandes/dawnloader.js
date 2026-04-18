@@ -234,25 +234,27 @@ zokou({
   const repondre = makeRepondre(sock, jid, ms);
 
   if (!Array.isArray(arg) || !arg.length)
-    return repondre("❌ Taja jina la video.\nMfano: .video Rema Calm Down");
+    return repondre("❌ Taja jina la video.\nMfano: *.video Rema Calm Down*");
 
   const query = arg.join(" ");
 
   try {
+    // ── STEP 1: Tafuta YouTube ──
     const results = await ytSearch(query);
-    if (!results || !results.videos.length)
-      return repondre("❌ Video haikupatikana.");
+    if (!results?.videos?.length)
+      return repondre("❌ Video haikupatikana YouTube.");
 
     const video = results.videos[0];
     const videoUrl = video.url;
 
+    // ── STEP 2: Tuma ujumbe wa kusubiri ──
     await sock.sendMessage(jid, {
-      text: "```📥 Inadownload video...```",
+      text: "```📥 Inadownload video, subiri...```",
       contextInfo: {
         ...contextBase,
         externalAdReply: {
           title: video.title,
-          body: "Searching YouTube...",
+          body: "⏳ Inaprocess...",
           thumbnailUrl: video.thumbnail,
           sourceUrl: videoUrl,
           mediaType: 1,
@@ -261,50 +263,34 @@ zokou({
       },
     }, { quoted: ms });
 
-    // APIs za video — GiftedTech kwanza
-    const videoApis = [
-      `${GiftedTechApi}/api/download/ytmp4?apikey=${GiftedApiKey}&url=${encodeURIComponent(videoUrl)}`,
-      `https://www.dark-yasiya-api.site/download/ytmp4?url=${encodeURIComponent(videoUrl)}`,
-      `https://api.dreaded.site/api/ytdl/video?query=${encodeURIComponent(videoUrl)}`,
-    ];
+    // ── STEP 3: Srihub API ──
+    const sriKey = conf.SRIHUB_KEY || "dew_Fcd7IDbzuS1UxCSId47VYYPvCcbTNhAKX3VvvDM8";
+    const apiRes = await axios.get(
+      `https://appi.srihub.store/download/ytmp4?url=${encodeURIComponent(videoUrl)}&apikey=${sriKey}`,
+      { timeout: 30000 }
+    );
 
-    let response = null;
+    if (!apiRes.data?.success || !apiRes.data?.result?.download_url)
+      return repondre("❌ Download imeshindwa. Jaribu tena baadaye.");
 
-    for (let url of videoApis) {
-      try {
-        console.log("Trying video API:", url);
-        const res = await axios.get(url, { timeout: 20000 });
-        const d = res.data;
-        const link = d?.result?.download_url || d?.result?.link || d?.link || d?.url;
-        if (link) {
-          response = {
-            title: d?.result?.title || d?.title || video.title,
-            link,
-            thumbnail: d?.result?.thumbnail || d?.thumbnail || video.thumbnail,
-          };
-          console.log("✅ Video API ikafanikiwa!");
-          break;
-        }
-      } catch (e) {
-        console.log("❌ Video API imefail:", e.message);
-      }
-    }
+    const result = apiRes.data.result;
 
-    if (!response || !response.link)
-      return repondre("❌ Download imeshindwa. APIs zote zimefail. Jaribu baadaye.");
-
+    // ── STEP 4: Tuma Video ──
     await sock.sendMessage(jid, {
-      video: { url: response.link },
-      caption: `🎬 *${response.title}*\n\n_Powered by QUEEN-KATE-AI_`,
+      video: { url: result.download_url },
+      caption:
+        `🎬 *${result.title}*\n\n` +
+        `📊 Quality: ${result.quality}p | ${result.format?.toUpperCase()}\n` +
+        `_Powered by QUEEN-KATE-AI_`,
       mimetype: "video/mp4",
       contextInfo: {
         ...contextBase,
         externalAdReply: {
-          title: response.title,
-          body: "Tap to watch on YouTube",
+          title: result.title,
+          body: `📊 ${result.quality}p MP4`,
           mediaType: 1,
           showAdAttribution: false,
-          thumbnailUrl: response.thumbnail,
+          thumbnailUrl: result.thumbnail,
           sourceUrl: videoUrl,
           renderLargerThumbnail: true,
         },
@@ -312,8 +298,8 @@ zokou({
     }, { quoted: ms });
 
   } catch (err) {
-    console.error("Video Download Error:", err);
-    return repondre("❌ Video download imeshindwa: " + (err.message || err));
+    console.error("Video error:", err.message);
+    return repondre("❌ Video download imeshindwa: " + err.message);
   }
 });
 
