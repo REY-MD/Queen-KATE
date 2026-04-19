@@ -243,14 +243,13 @@ zokou({
       },
     }, { quoted: ms });
 
-    // ── STEP 3: Srihub API ──
-    const sriKey = conf.SRIHUB_KEY || "dew_Fcd7IDbzuS1UxCSId47VYYPvCcbTNhAKX3VvvDM8";
+    // ── STEP 3: SilvaTech API ──
     const apiRes = await axios.get(
-      `https://appi.srihub.store/download/ytmp4?url=${encodeURIComponent(videoUrl)}&apikey=${sriKey}`,
+      `https://api.silvatech.co.ke/download/ytmp4?url=${encodeURIComponent(videoUrl)}`,
       { timeout: 30000 }
     );
 
-    if (!apiRes.data?.success || !apiRes.data?.result?.download_url)
+    if (!apiRes.data?.status || !apiRes.data?.result?.download_url)
       return repondre("❌ Download imeshindwa. Jaribu tena baadaye.");
 
     const result = apiRes.data.result;
@@ -260,18 +259,18 @@ zokou({
       video: { url: result.download_url },
       caption:
         `🎬 *${result.title}*\n\n` +
-        `📊 Quality: ${result.quality}p | ${result.format?.toUpperCase()}\n` +
+        `📺 Channel: ${result.channel}\n` +
         `_Powered by QUEEN-KATE-AI_`,
       mimetype: "video/mp4",
       contextInfo: {
         ...contextBase,
         externalAdReply: {
           title: result.title,
-          body: `📊 ${result.quality}p MP4`,
+          body: `📺 ${result.channel} | YouTube`,
           mediaType: 1,
           showAdAttribution: false,
           thumbnailUrl: result.thumbnail,
-          sourceUrl: videoUrl,
+          sourceUrl: result.watch_url || videoUrl,
           renderLargerThumbnail: true,
         },
       },
