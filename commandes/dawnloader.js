@@ -1,7 +1,6 @@
 const { zokou } = require("../framework/zokou");
 const axios = require("axios");
 const conf = require("../set");
-const { searchYouTube, downloadVideo } = require("./lib/ytHelper");
 const contextBase = {
   forwardingScore: 999,
   isForwarded: true,
