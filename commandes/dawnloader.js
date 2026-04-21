@@ -131,7 +131,7 @@ zokou(
         return repondre(`❌ Error: ${movie.Error}`);
 
       // ── STEP 2: TMDB - Pata YouTube Trailer Key ──
-      const tmdbKey = conf.TMDB_KEY || "8265bd1679663a7ea12ac168da84d2e8";
+      const tmdbKey = conf.TMDB_KEY || "AIzaSyDpz0xO4VU4mizNPaDvZWPE_AydwV5TNkU";
       const tmdbRes = await axios.get(
         `https://api.themoviedb.org/3/find/${movieID}?api_key=${tmdbKey}&external_source=imdb_id`,
         { timeout: 10000 }
