@@ -92,115 +92,59 @@ const makeRepondre = (sock, jid, ms) => async (text) => {
 // ─────────────────────────────────────────
 // 🎬 TRAILER COMMAND
 // ─────────────────────────────────────────
-zokou(
-  {
-    nomCom: "trailer",
-    aliases: ["trl", "trailer"],
-    categorie: "Search",
-    reaction: "🎬",
-  },
-  async (jid, sock, data) => {
-    const { arg, ms } = data;
-    const repondre = makeRepondre(sock, jid, ms);
+zokou({
+  nomCom: "trailer",
+  aliases: ["trl", "trailer"],
+  categorie: "Search",
+  reaction: "🎬",
+}, async (jid, sock, data) => {
+  const { arg, ms } = data;
+  const repondre = makeRepondre(sock, jid, ms);
 
-    if (!arg[0]) return repondre("❌ Taja jina la movie.\nMfano: *.trailer Avengers*");
+  if (!Array.isArray(arg) || !arg.length)
+    return repondre("❌ Taja jina la movie.\nMfano: *.trailer Avengers*");
 
-    const query = arg.join(" ");
+  const query = arg.join(" ");
 
-    try {
-      await repondre("🔍 Inatafuta trailer, subiri...");
+  try {
+    await repondre("🔍 _Inatafuta trailer YouTube..._");
 
-      // ── STEP 1: OMDB - Movie Info ──
-      const omdbKey = conf.OMDB_KEY || "38f19ae1";
-      const searchRes = await axios.get(
-        `http://www.omdbapi.com/?s=${encodeURIComponent(query)}&apikey=${omdbKey}`,
-        { timeout: 10000 }
-      );
+    // ── STEP 1: Tafuta Trailer YouTube ──
+    const video = await searchYouTube(query, "trailer");
+    if (!video) return repondre("❌ Trailer haikupatikana YouTube.");
 
-      if (searchRes.data.Response === "False")
-        return repondre(`❌ Movie haikupatikana: ${searchRes.data.Error}`);
+    await repondre("📥 _Inadownload trailer, subiri..._");
 
-      const movieID = searchRes.data.Search[0].imdbID;
-      const detailsRes = await axios.get(
-        `http://www.omdbapi.com/?i=${movieID}&apikey=${omdbKey}`,
-        { timeout: 10000 }
-      );
-      const movie = detailsRes.data;
+    // ── STEP 2: Download ──
+    const result = await downloadVideo(video.url);
 
-      if (movie.Response === "False")
-        return repondre(`❌ Error: ${movie.Error}`);
-
-      // ── STEP 2: TMDB - Pata YouTube Trailer Key ──
-      const tmdbKey = conf.TMDB_KEY || "AIzaSyDpz0xO4VU4mizNPaDvZWPE_AydwV5TNkU";
-      const tmdbRes = await axios.get(
-        `https://api.themoviedb.org/3/find/${movieID}?api_key=${tmdbKey}&external_source=imdb_id`,
-        { timeout: 10000 }
-      );
-
-      const tmdbMovie = tmdbRes.data.movie_results[0];
-      if (!tmdbMovie) return repondre("❌ Movie haikupatikana TMDB.");
-
-      const videosRes = await axios.get(
-        `https://api.themoviedb.org/3/movie/${tmdbMovie.id}/videos?api_key=${tmdbKey}`,
-        { timeout: 10000 }
-      );
-
-      const trailer =
-        videosRes.data.results.find(v => v.type === "Trailer" && v.site === "YouTube") ||
-        videosRes.data.results.find(v => v.type === "Teaser" && v.site === "YouTube");
-
-      if (!trailer) return repondre("❌ Hakuna trailer YouTube kwa movie hii.");
-
-      const ytUrl = `https://www.youtube.com/watch?v=${trailer.key}`;
-
-      await repondre("📥 Inapakua trailer...");
-
-      // ── STEP 3: SilvaTech API - Download ──
-      const apiRes = await axios.get(
-        `https://api.silvatech.co.ke/download/ytmp4?url=${encodeURIComponent(ytUrl)}`,
-        { timeout: 30000 }
-      );
-
-      if (!apiRes.data?.status || !apiRes.data?.result?.download_url)
-        return repondre("❌ Download imeshindwa. Jaribu tena baadaye.");
-
-      const result = apiRes.data.result;
-
-      const plot =
-        movie.Plot?.length > 200 ? movie.Plot.slice(0, 197) + "..." : movie.Plot;
-
-      // ── STEP 4: Tuma Trailer ──
-      await sock.sendMessage(jid, {
-        video: { url: result.download_url },
-        caption:
-          `🎬 *${movie.Title}* (${movie.Year})\n\n` +
-          `⭐ IMDb: *${movie.imdbRating}/10*\n` +
-          `🎭 Genre: ${movie.Genre}\n` +
-          `🌍 Country: ${movie.Country}\n` +
-          `⏱️ Runtime: ${movie.Runtime}\n` +
-          `📝 ${plot}\n\n` +
-          `🔗 ${ytUrl}`,
-        mimetype: "video/mp4",
-        contextInfo: {
-          ...contextBase,
-          externalAdReply: {
-            title: `🎬 ${movie.Title} - Official Trailer`,
-            body: `⭐ IMDb: ${movie.imdbRating}/10 | ${movie.Year}`,
-            thumbnailUrl: movie.Poster !== "N/A" ? movie.Poster : conf.URL,
-            sourceUrl: ytUrl,
-            mediaType: 1,
-            renderLargerThumbnail: true,
-          },
+    // ── STEP 3: Tuma Trailer ──
+    await sock.sendMessage(jid, {
+      video: { url: result.download_url },
+      caption:
+        `🎬 *${video.title}*\n\n` +
+        `📺 Channel: ${video.channel}\n` +
+        `⏱️ Duration: ${video.duration}\n\n` +
+        `_Powered by QUEEN-KATE-AI_`,
+      mimetype: "video/mp4",
+      contextInfo: {
+        ...contextBase,
+        externalAdReply: {
+          title: video.title,
+          body: `🎬 Official Trailer | YouTube`,
+          thumbnailUrl: video.thumbnail,
+          sourceUrl: video.url,
+          mediaType: 1,
+          renderLargerThumbnail: true,
         },
-      }, { quoted: ms });
+      },
+    }, { quoted: ms });
 
-    } catch (err) {
-      console.error("Trailer error:", err.message);
-      return repondre("❌ Hitilafu imetokea: " + err.message);
-    }
+  } catch (err) {
+    console.error("Trailer error:", err.message);
+    return repondre("❌ Imeshindwa: " + err.message);
   }
-);
-        
+}); 
 // ─────────────────────────────────────────
 // 🎥 VIDEO COMMAND
 // ─────────────────────────────────────────
@@ -219,58 +163,41 @@ zokou({
   const query = arg.join(" ");
 
   try {
+    await repondre("🔍 _Inatafuta video YouTube..._");
+
     // ── STEP 1: Tafuta YouTube ──
-    const results = await ytSearch(query);
-    if (!results?.videos?.length)
-      return repondre("❌ Video haikupatikana YouTube.");
+    const video = await searchYouTube(query, "video");
+    if (!video) return repondre("❌ Video haikupatikana YouTube.");
 
-    const video = results.videos[0];
-    const videoUrl = video.url;
+    // ── STEP 2: Angalia muda ──
+    if (video.seconds > 600)
+      return repondre(
+        `❌ Video ndefu sana: *${video.duration}*\n` +
+        `⚠️ Limit ni dakika 10. Tafuta video fupi.`
+      );
 
-    // ── STEP 2: Tuma ujumbe wa kusubiri ──
-    await sock.sendMessage(jid, {
-      text: "```📥 Inadownload video, subiri...```",
-      contextInfo: {
-        ...contextBase,
-        externalAdReply: {
-          title: video.title,
-          body: "⏳ Inaprocess...",
-          thumbnailUrl: video.thumbnail,
-          sourceUrl: videoUrl,
-          mediaType: 1,
-          renderLargerThumbnail: false,
-        },
-      },
-    }, { quoted: ms });
+    await repondre("📥 _Inadownload video, subiri..._");
 
-    // ── STEP 3: SilvaTech API ──
-    const apiRes = await axios.get(
-      `https://api.silvatech.co.ke/download/ytmp4?url=${encodeURIComponent(videoUrl)}`,
-      { timeout: 30000 }
-    );
-
-    if (!apiRes.data?.status || !apiRes.data?.result?.download_url)
-      return repondre("❌ Download imeshindwa. Jaribu tena baadaye.");
-
-    const result = apiRes.data.result;
+    // ── STEP 3: Download ──
+    const result = await downloadVideo(video.url);
 
     // ── STEP 4: Tuma Video ──
     await sock.sendMessage(jid, {
       video: { url: result.download_url },
       caption:
-        `🎬 *${result.title}*\n\n` +
-        `📺 Channel: ${result.channel}\n` +
+        `🎬 *${video.title}*\n\n` +
+        `📺 Channel: ${video.channel}\n` +
+        `⏱️ Duration: ${video.duration}\n\n` +
         `_Powered by QUEEN-KATE-AI_`,
       mimetype: "video/mp4",
       contextInfo: {
         ...contextBase,
         externalAdReply: {
-          title: result.title,
-          body: `📺 ${result.channel} | YouTube`,
+          title: video.title,
+          body: `📺 ${video.channel} | YouTube`,
+          thumbnailUrl: video.thumbnail,
+          sourceUrl: video.url,
           mediaType: 1,
-          showAdAttribution: false,
-          thumbnailUrl: result.thumbnail,
-          sourceUrl: result.watch_url || videoUrl,
           renderLargerThumbnail: true,
         },
       },
@@ -278,7 +205,7 @@ zokou({
 
   } catch (err) {
     console.error("Video error:", err.message);
-    return repondre("❌ Video download imeshindwa: " + err.message);
+    return repondre("❌ Imeshindwa: " + err.message);
   }
 });
 
