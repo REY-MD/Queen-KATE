@@ -92,6 +92,7 @@ const makeRepondre = (sock, jid, ms) => async (text) => {
 // ─────────────────────────────────────────
 // 🎬 TRAILER COMMAND
 // ─────────────────────────────────────────
+const { searchYouTube, downloadVideo } = require("./lib/ytHelper");
 zokou({
   nomCom: "trailer",
   aliases: ["trl", "trailer"],
@@ -148,6 +149,7 @@ zokou({
 // ─────────────────────────────────────────
 // 🎥 VIDEO COMMAND
 // ─────────────────────────────────────────
+const { searchYouTube, downloadVideo } = require("./lib/ytHelper");
 zokou({
   nomCom: "video",
   aliases: ["ytvideo", "ytmp4", "getmovie", "moviedl"],
