@@ -45,18 +45,5 @@ zokou({ nomCom: "ping", categorie: "General" }, async (dest, zk, commandeOptions
                     mediaType: 1,
                 }
             }
-        }, { quoted: ms });
-
-        await zk.sendMessage(dest, {
-            audio: { url: AUDIO_URL },
-            mimetype: 'audio/mp4',
-            ptt: true,
-        }, { quoted: ms });
-
-    } catch (e) {
-        console.log("❌ Ping Command Error: " + e);
-        await zk.sendMessage(dest, { 
-            text: "❌ Error: " + e 
-        }, { quoted: ms });
-    }
+        }, 
 });
