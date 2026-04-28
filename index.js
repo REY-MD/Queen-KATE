@@ -324,61 +324,7 @@ zk.ev.on('messages.update', async (chatUpdate) => {
     }
 });
 
-// ================== CHATBOT (AUTO-REPLY & AUDIO) LOGIC ==================
-if (conf.CHATBOT === "on" && !ms.key.fromMe) {
-    const query = texte.toLowerCase().trim();
-    const senderJid = ms.key.participant || ms.key.remoteJid;
-    const senderTag = `@${senderJid.split('@')[0]}`;
 
-    // --- 1. TEXT REPLIES (50+ Triggers) ---
-    const textTriggers = [
-        "hi", "hello", "mambo", "niaje", "habari", "mambo vipi", "shwari", "oy", "oiee", 
-        "mambo?", "poa", "safi", "mzima", "hujambo", "habari yako", "mshkaji", "vipi", 
-        "mambo yanakuwaje", "uko sawa", "niambie", "semo", "bro", "kiongozi", "admin", 
-        "bot", "timnasa", "mambo bot", "ujumbe", "nisaidie", "msaada", "karibu", "asanteni", 
-        "thanks", "thank you", "asante", "shukrani", "pamoja", "tuko pamoja", "uko wapi", 
-        "uko online", "mbona kimya", "nicheki", "nipigie", "unajua nini", "mimi hapa", 
-        "nani yuko hapo", "upo?", "habari za mchana", "habari za asubuhi", "habari za jioni"
-    ];
-
-    if (textTriggers.includes(query)) {
-        let responses = [
-            `Safi sana ${senderTag}, mzima? Karibu! 🤖`,
-            `kaka ${senderTag}! Unahitaji nini kiongozi?`,
-            `Salama kabisa ${senderTag}, natumai u mzima wa afya.`,
-            `Karibu sana ${senderTag}, furaha yangu ni kukusaidia! 🙏`,
-            `mkuu ${senderTag}, sema lolote nipo kwa ajili yako.`
-        ];
-        let randomResponse = responses[Math.floor(Math.random() * responses.length)];
-
-        await zk.sendPresenceUpdate('composing', origineMessage);
-        await new Promise(resolve => setTimeout(resolve, 2000)); 
-        await zk.sendMessage(origineMessage, { text: randomResponse, mentions: [senderJid] }, { quoted: ms });
-    }
-
-    // --- 2. AUDIO REPLIES (50+ Triggers) ---
-    // Hapa bot itatuma ile link yako ya audio kwa maneno haya:
-    const audioTriggers = [
-        "cheka", "hahaha", "haha", "😂", "🤣", "vichekesho", "niambie kitu", "nichekeshe",
-        "sound", "sauti", "audio", "nitumie", "oyee", "oyee!", "shangilia", "shangwe",
-        "piga kelele", "fanya vurugu", "vurugu", "sherehe", "happy", "furaha", "cheza",
-        "ngoma", "mziki", "hit", "fire", "moto", "🔥🔥", "balaa", "noma", "hatari",
-        "fungua", "sikiliza", "test", "jaribu", "fanya", "anza", "piga", "rekodi",
-        "sauti gani", "nini hii", "sikia", "mambo gani", "mambo vipi sauti", "mzuka", 
-        "amsha", "amsha amsha", "changamka", "changamsha", "timoth"
-    ];
-
-    if (audioTriggers.includes(query)) {
-        const audioUrl = "https://files.catbox.moe/de6scq.MP3";
-
-        await zk.sendPresenceUpdate('recording', origineMessage);
-        await new Promise(resolve => setTimeout(resolve, 3500)); 
-        await zk.sendMessage(origineMessage, { 
-            audio: { url: audioUrl }, 
-            mimetype: 'audio/mp4', 
-            ptt: true 
-        }, { quoted: ms });
-    
  // ================== STATUS MENTIONS PROTECTION ==================
 if (conf.STATUS_MENTIONS === "on" && ms.message && !ms.key.fromMe) {
     const isGroup = origineMessage.endsWith('@g.us');
